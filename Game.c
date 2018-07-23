@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "Game.h"
 
 void print_frame(Board *board){
