@@ -40,3 +40,101 @@ int print_calloc_failed_err(){
 	return VALID;
 }
 
+int print_malloc_failed_err(){
+	printf("Error: malloc has failed\n");
+	return VALID;
+}
+
+int print_board_contains_error() {
+	printf("Error: board contains errorneous values\n");
+	return VALID;
+}
+
+void print_frame(Board *board){
+	/* prints "-" according to number of cells in block */
+	int i = 0;
+	int num = (((3 * board->m_cols) + 2) * board->m_rows) + 1;
+	for (i = 1; i < num; i++){
+		printf("-");
+	}
+	printf("-\n");
+}
+
+int print_cell(Cell cell, int mark_err) {
+	if (mark_err != FALSE && mark_err != TRUE) {
+		return NOT_VALID;
+	}
+
+	else if (cell.is_fixed){ /* fixed cell */
+		printf(" %2d.", cell.val);
+	}
+
+	else if (cell.is_err && mark_err) {
+		/* mark errors */
+		printf(" %2d*", cell.val);
+	}
+
+	else if (cell.val == 0){ /* empty cell */
+		printf("   ");
+	}
+
+	else{ /* filled a regullar val */
+		printf("  %d", cell.val);
+	}
+	return VALID;
+}
+
+void print_board(Board *board, int mark_err){
+	int n = board->n; /* num of cells in a row of board */
+	int m_c = board->m_cols; /* num of cells in a column of block */
+	int m_r = board->m_rows; /* num of cells in a row of block */
+	int i = 0;
+	int j = 0;
+	Cell cell;
+
+	print_frame(board); /* print the top frame line */
+	for (i = 0; i < n; i++){
+		printf("|"); /* start a block */
+		for (j = 0; j < n;j++){
+			cell = board->game_table[i][j];
+			print_cell(cell, mark_err);
+			if ((j+1) % m_c == 0){ /* frame of block */
+				printf(" |");
+			}
+		}
+		printf("\n");
+		if ((i+1) % m_r == 0){ /* end of a block */
+			print_frame(board);
+		}
+	}
+}
+
+int print_err_is_mark_val() {
+	printf("Error: the value should be 0 or 1\n");
+	return VALID;
+}
+
+ int print_err_value_not_in_range() {
+	 printf("Error: value not in range 0-N\n");
+	 return VALID;
+ }
+
+int print_err_cell_is_fixed() {
+	printf("Error: cell is fixed\n");
+	return VALID;
+}
+
+int print_err_row_col_not_in_range() {
+	printf("Error: value not in range 1-N\n");
+	return VALID;
+}
+
+int print_err_board_contains_error() {
+	printf("Error: board contains erroneous values\n");
+	return VALID;
+}
+
+int print_err_cell_assigned() {
+	printf("Error: cell already contains a value\n");
+	return VALID;
+}

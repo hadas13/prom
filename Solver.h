@@ -12,30 +12,19 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
+#include "defines.h"
+#include "Game.h"
+#include "GUI.h"
 
 
 /************** solver's MACROS ***********/
 
-#define NOT_VALID 0
-#define VALID 1 
-#define UNASSIGNED 0
-#define NON_OPTION 0
+#define NOT_VALID     0
+#define VALID         1 
+#define UNASSIGNED    0
+#define NON_OPTION    0
 #define SINGLE_OPTION 1
-#define FIXED_VAL -1
-
-
-/************** solver's struct ***********/
-
-typedef struct _board {
-	int **game_table;
-	int **solution;
-	int n;
-	int m_rows;
-	int m_cols;
-	int filled;
-} Board;
-
-
+#define FIXED_VAL    -1
 /************** solver's functions ***********/
 
 
@@ -52,7 +41,7 @@ int get_positive(int num);
  * @param n: length of the array.
  * @return value: VALID.
  */
-int free_matrix(int **mat, int n);
+int free_matrix(Cell **mat, int n);
 
 /* 
  * freeing all the allocated memory of board
@@ -97,7 +86,7 @@ int *get_num_block_position(int row_pos, int col_pos, int m_rows, int m_cols);
  * @param num: checking this number.
  * @return value: VALID if legal, else - NOT_VALID.
  */
-int is_row_valid(Board board,int **board_to_check, int row, int col_p, int number);
+int is_row_valid(Board board, Cell **board_to_check, int row, int col_p, int number);
 
 
 /* 
@@ -108,7 +97,7 @@ int is_row_valid(Board board,int **board_to_check, int row, int col_p, int numbe
  * @param num: checking this number.
  * @return value: VALID if legal, else - NOT_VALID.
  */
-int is_col_valid(Board board, int **board_to_check, int row_p, int col, int number);
+int is_col_valid(Board board, Cell **board_to_check, int row_p, int col, int number);
 
 
 /*
@@ -119,7 +108,7 @@ int is_col_valid(Board board, int **board_to_check, int row_p, int col, int numb
  * @param n_col_p: the columns' block position to check.
  * @return value: VALID if valid, else - NOT_VALID.
  */
-int is_block_valid(Board board, int **board_to_check, int num, int n_row_p, int n_col_p);
+int is_block_valid(Board board, Cell **board_to_check, int num, int n_row_p, int n_col_p);
 
 /*
  * checks if num can be in a specific position
@@ -131,7 +120,7 @@ int is_block_valid(Board board, int **board_to_check, int num, int n_row_p, int 
  * @param m_rows: block rows' length.
  * @return value: NOT_VALID if num can't be in this position, else - VALID.
  */
-int is_cell_valid(Board *board, int **board_to_check, int num, int n_row_p, int n_col_p);
+int is_cell_valid(Board *board, Cell **board_to_check, int num, int n_row_p, int n_col_p);
 
 /* 
  * the deterministic solving algorithme.
@@ -140,7 +129,7 @@ int is_cell_valid(Board *board, int **board_to_check, int num, int n_row_p, int 
  * @param row: rows' index to solve.
  * @param col: columns' index to solve.
  */
-int solve_cell_deterministically(int **check_board, Board *board, int row, int column);
+int solve_cell_deterministically(Cell **check_board, Board *board, int row, int column);
 
 
 /*
@@ -153,14 +142,14 @@ int solve_cell_deterministically(int **check_board, Board *board, int row, int c
  * @param ret_arr: 1's in all the possible positions. ret_arr[n] = num of numbers.
  * @return value: NOT_LEGAL for failure, else - VALID.
  */
-int get_possible_vals(Board *board, int **check_board, int row_pos, int col_pos, int *arr);
+int get_possible_vals(Board *board, Cell **check_board, int row_pos, int col_pos, int *arr);
 
 
 /*
  * @param board_to_check: checks this two-dimensions array.
  * @param n: length of the row or column in the board.
  */
-int is_full(int **board_to_check, int n);
+int is_full(Cell **board_to_check, int n);
 
 
 /* 
@@ -168,7 +157,7 @@ int is_full(int **board_to_check, int n);
  * @param n: the length of the possible 1s.
  * @return value: cell's index int the array with the value of 1. not found - NOT_VALID.
  */
-int get_first_option(int *num_arr, int n, int from);
+int get_first_option(int *opt_arr, int n, int from);
 
 
 /*
@@ -204,16 +193,16 @@ int init_solution_board(Board *board);
  * @param fixed_nums: number of fixed cells.
  * @return value: new game board and solution. 
  */
-Board *init_game(int n, int m_rows, int m_cols, int fixed_nums);
+Board *init_board(int n, int m_rows, int m_cols, int fixed_nums);
 
 
 /* 
- * @param source_b: two-dimensions array to copy from.
- * @param dest_b: two-dimentions array to copy to.
+ * @param source_b: two-dimensions array of Cells to copy from.
+ * @param dest_b: two-dimentions array of Cells to copy to.
  * @param len: number of cells in in each array.
  * @return value: for success - VALID, else - NOT_VALID. 
  */
-int copy_board(int **source_b, int **dest_b, int len);
+int copy_board(Cell **source_b, Cell **dest_b, int len);
 
 
 /*
@@ -222,7 +211,7 @@ int copy_board(int **source_b, int **dest_b, int len);
  * @param validation_b: checks if this board is solvable.
  * @return value: VALID if it can be solved, else - NOT_VALID.
  */
-int is_solvable(Board *board, int **validation_b);
+int is_solvable(Board *board, Cell **validation_b);
 
 
 /*

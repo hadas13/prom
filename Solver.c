@@ -5,19 +5,8 @@
 #include <stdlib.h>
 
 
-int get_positive(int num){
-	if (num < 0){
-		return -num;
-	}
-
-	else {
-		return num;
-	}
-}
-
-
-int free_matrix(int **mat, int n){
-	int i = 0;
+int free_matrix(Cell **mat, int n){
+	int i;
 
 	for (i = 0; i < n; i++) {
 		free(mat[i]);
@@ -48,9 +37,10 @@ int insert_fixed_cell(Board *board){
 		ran_col = rand() % n; 
 		ran_row = rand() % n;
 
-		if (board->game_table[ran_row][ran_col] == UNASSIGNED){
+		if (board->game_table[ran_row][ran_col].val == UNASSIGNED){
 			/* empty cell - insert fixed num */
-			board->game_table[ran_row][ran_col] = FIXED_VAL * board->solution[ran_row][ran_col];
+			board->game_table[ran_row][ran_col].val = board->solution[ran_row][ran_col].val;
+			board->game_table[ran_row][ran_col].is_fixed = TRUE;
 			counter++;
 		}
 	}
@@ -64,15 +54,15 @@ int init_game_table(Board *board){
 
 	board->game_table = calloc(n, sizeof *board->game_table);
 	if (board->solution == NULL) {
-		printf("Error: calloc has failed\n");
+		print_calloc_failed_err();
 		clean_up(board);
 		exit(0);
 	}
 
 	for (i = 0; i < n; i++){
-	       board->game_table[i] = (int *)calloc(n, sizeof(*board->game_table[i]));	
+	       board->game_table[i] = (Cell *)calloc(n, sizeof(*board->game_table[i]));	
 	       if (board->game_table[i] == NULL) {
-		       printf("Error: calloc has failed\n");
+		       print_calloc_failed_err();
 		       clean_up(board);
 		       exit(0);
 	       }
@@ -97,7 +87,7 @@ int *get_num_block_position(int row_pos, int col_pos, int m_rows, int m_cols){
 	return ret_arr;
 }
 
-int is_row_valid(Board board,int **board_to_check, int row, int col_p, int number){
+int is_row_valid(Board board, Cell **board_to_check, int row, int col_p, int number){
 	int col = 0;
 
 	for (col = 0; col < board.n; col++){
@@ -105,7 +95,7 @@ int is_row_valid(Board board,int **board_to_check, int row, int col_p, int numbe
 			/* the same cell as checked */
 			continue;
 		}
-		else if (get_positive(board_to_check[row][col]) == number){
+		else if (board_to_check[row][col].val == number){
 			return NOT_VALID;
 		}
 	}
@@ -115,7 +105,7 @@ int is_row_valid(Board board,int **board_to_check, int row, int col_p, int numbe
 
 
 
-int is_col_valid(Board board, int **board_to_check, int row_p, int col, int number){
+int is_col_valid(Board board, Cell **board_to_check, int row_p, int col, int number){
 	int row = 0;
 
 	for (row = 0; row < board.n; row++){
@@ -124,7 +114,7 @@ int is_col_valid(Board board, int **board_to_check, int row_p, int col, int numb
 			continue;
 		}
 
-		else if (get_positive(board_to_check[row][col]) == number){
+		else if (board_to_check[row][col].val == number){
 			return NOT_VALID;
 		}
 	}
@@ -132,7 +122,7 @@ int is_col_valid(Board board, int **board_to_check, int row_p, int col, int numb
 	return VALID;
 }
 
-int is_block_valid(Board board, int **board_to_check, int num, int n_row_p, int n_col_p){
+int is_block_valid(Board board, Cell **board_to_check, int num, int n_row_p, int n_col_p){
 	int r = 0;
 	int c = 0;
 	int start_r = 0;
@@ -150,7 +140,7 @@ int is_block_valid(Board board, int **board_to_check, int num, int n_row_p, int 
 				/* the same cell as checked */
 				continue;
 			}
-			else if (get_positive(board_to_check[r][c]) == num){
+			else if (board_to_check[r][c].val == num){
 				/* there is num in the block */
 				free(block_pos);
 				return NOT_VALID;
@@ -163,7 +153,7 @@ int is_block_valid(Board board, int **board_to_check, int num, int n_row_p, int 
 }
 
 
-int is_cell_valid(Board *board, int **board_to_check, int num, int n_row_p, int n_col_p){
+int is_cell_valid(Board *board, Cell **board_to_check, int num, int n_row_p, int n_col_p){
 
 	/* check if legal in row and column */
 	if (!is_row_valid(*board, board_to_check, n_row_p, n_col_p, num) || 
@@ -175,7 +165,7 @@ int is_cell_valid(Board *board, int **board_to_check, int num, int n_row_p, int 
 	return VALID;
 }
 
-int solve_cell_deterministically(int **check_board, Board *board, int row, int column){
+int solve_cell_deterministically(Cell **check_board, Board *board, int row, int column){
 	int next_num = 0;
 	int n = board->n;
 
@@ -184,7 +174,7 @@ int solve_cell_deterministically(int **check_board, Board *board, int row, int c
 		return VALID;
 	}
 
-	if (check_board[row][column] != UNASSIGNED) {
+	if (check_board[row][column].val != UNASSIGNED) {
 		if (column == n - 1) {
 			if (solve_cell_deterministically(check_board, board, row + 1, 0)){
 				return VALID;
@@ -200,7 +190,7 @@ int solve_cell_deterministically(int **check_board, Board *board, int row, int c
 
 	for (next_num = 1; next_num < n + 1; next_num++){
 		if (is_cell_valid(board, check_board, next_num, row, column)){
-			check_board[row][column] = next_num;
+			check_board[row][column].val = next_num;
 			
 			if (column == (n - 1)) {
 				 /*we got to last column in the row - turn to the next row */
@@ -217,7 +207,7 @@ int solve_cell_deterministically(int **check_board, Board *board, int row, int c
 			}
 
 			/* didn't find a valid value for this cell */
-			check_board[row][column] = UNASSIGNED;
+			check_board[row][column].val = UNASSIGNED;
 		}
 	}
 
@@ -225,7 +215,7 @@ int solve_cell_deterministically(int **check_board, Board *board, int row, int c
 }
 
 
-int get_possible_vals(Board *board, int **check_board, int row_pos, int col_pos, int *arr){
+int get_possible_vals(Board *board, Cell **check_board, int row_pos, int col_pos, int *arr){
 	int index = 0;
 	int counter = 0;
 
@@ -251,13 +241,13 @@ int get_possible_vals(Board *board, int **check_board, int row_pos, int col_pos,
 }
 
 
-int is_full(int **board_to_check, int n){
+int is_full(Cell **board_to_check, int n){
 	int i = 0;
 	int j = 0;
 
 	for (i = 0; i < n; i++){
 		for (j = 0; j < n; j++){
-			if (board_to_check[i][j] == UNASSIGNED){
+			if (board_to_check[i][j].val == UNASSIGNED){
 				return NOT_VALID;
 			}
 		}
@@ -267,10 +257,10 @@ int is_full(int **board_to_check, int n){
 }
 
 
-int get_first_option(int *num_arr, int n, int from){
+int get_first_option(int *cell_arr, int n, int from){
 
 	for (; from < n + 1; from++){
-		if (num_arr[from] == 1){
+		if (cell_arr[from] == 1){
 			return (from + 1);
 		}
 	}
@@ -324,7 +314,7 @@ int solve_cell_randomly(Board *board, int row, int column) {
 		return VALID;
 	}
 
-	if (board->solution[row][column] != UNASSIGNED) {
+	if (board->solution[row][column].val != UNASSIGNED) {
 		/* cell is already set - insert to solution board */
 		if (column == n - 1) {
 			if (solve_cell_randomly(board, row + 1, 0)){
@@ -345,7 +335,7 @@ int solve_cell_randomly(Board *board, int row, int column) {
 	if (num_arr == NULL) {
 		printf("Error: calloc has failed\n");
 		clean_up(board);
-		exit(0);
+		exit(NOT_VALID);
 	}
 
 	get_possible_vals(board, board->solution, row, column, num_arr);
@@ -354,7 +344,7 @@ int solve_cell_randomly(Board *board, int row, int column) {
 			case (NON_OPTION):
 				/* no possible number for this cell */
 				free(num_arr);
-				board->solution[row][column] = 0;
+				board->solution[row][column].val = 0;
 				end_flag = 0;
 				return NOT_VALID;
 
@@ -368,7 +358,9 @@ int solve_cell_randomly(Board *board, int row, int column) {
 				break;
 		}
 	
-		board->solution[row][column] = next_num;
+		board->solution[row][column].val = next_num;
+		board->solution[row][column].is_err = FALSE;
+		board->solution[row][column].is_fixed = FALSE;
 		
 		if (column == (n - 1)) {
 			 /*we got to last column in the row - turn to the next row */
@@ -386,7 +378,9 @@ int solve_cell_randomly(Board *board, int row, int column) {
 		}
 
 		/* didn't find a valid value for this cell */
-		board->solution[row][column] = UNASSIGNED;
+		board->solution[row][column].val = UNASSIGNED;
+		board->solution[row][column].is_err = FALSE;
+		board->solution[row][column].is_fixed = FALSE;
 		update_num_arr(num_arr, n, next_num);
 	}
 
@@ -428,11 +422,12 @@ int init_solution_board(Board *board){
 }
 
 
-Board *init_game(int n, int m_rows, int m_cols, int fixed_nums){
+Board *init_board(int n, int m_rows, int m_cols, int fixed_nums){
 	Board * board = NULL;
 
 	board = malloc(sizeof(Board));
 	if (board == NULL){
+		print_malloc_failed_err();
 		clean_up(board);
 		return NOT_VALID;
 	}
@@ -454,7 +449,7 @@ Board *init_game(int n, int m_rows, int m_cols, int fixed_nums){
 	return board;
 }
 
-int copy_board(int **source_b, int **dest_b, int len){
+int copy_board(Cell **source_b, Cell **dest_b, int len){
 	int i = 0;
 	int j = 0;
 
@@ -464,14 +459,17 @@ int copy_board(int **source_b, int **dest_b, int len){
 
 	for (i = 0; i < len; i++) {
 		for (j = 0; j < len; j++) {
-			dest_b[i][j] = get_positive(source_b[i][j]);
+			/* copy cell struct from source to dest */
+			dest_b[i][j].val = source_b[i][j].val;
+			dest_b[i][j].is_fixed = source_b[i][j].is_fixed;
+			dest_b[i][j].is_err = source_b[i][j].is_err;
 		}
 	}
 
 	return VALID;
 }
 
-int is_solvable(Board *board, int **validation_b) {
+int is_solvable(Board *board, Cell **validation_b) {
 	int row = 0;
 	int col = 0;
 	int n = board->n;
@@ -491,22 +489,22 @@ int is_solvable(Board *board, int **validation_b) {
 
 
 int validate_game_table(Board *board) {
-	int **validation_board = NULL;
+	Cell **validation_board = NULL;
 	int i = 0;
 
 	validation_board = calloc(board->n, sizeof *validation_board);
 	if (validation_board == NULL) {
 		printf("Error: calloc has failed\n");
 		clean_up(board);
-		exit(0);
+		exit(NOT_VALID);
 	}
 
 	for (i = 0; i < board->n; i++){
-	       validation_board[i] = calloc(board->n, sizeof(*validation_board[i]));	
+	       validation_board[i] = (Cell *)calloc(board->n, sizeof(*validation_board[i]));	
 	       if (validation_board[i] == NULL) {
 		       printf("Error: calloc has failed\n");
 		       clean_up(board);
-		       exit(0);
+		       exit(NOT_VALID);
 	       }
 	}
 
