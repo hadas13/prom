@@ -21,7 +21,6 @@
 
 #define NOT_VALID     0
 #define VALID         1 
-#define UNASSIGNED    0
 #define NON_OPTION    0
 #define SINGLE_OPTION 1
 #define FIXED_VAL    -1

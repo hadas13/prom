@@ -12,8 +12,8 @@ int stop_game(Board *board){
 	return (stop);
 }
 
-int mark_errors(Game *game, int is_mark) {
-	if (game->game_mode != Solve) {
+int play_mark_errors(Game *game, int is_mark) {
+	if (game->game_mode != SOLVE) {
 		printf("Error: invalid command\n"); /* decided if to do it here */
 		return NOT_VALID;
 	}
@@ -50,6 +50,7 @@ int update_errors_on_board(Board *board) {
 	int n = board->n;
 	int is_err = FALSE;
 	int val = 0;
+	int num_err = 0;
 	int r, c = 0;
 
 	for (r = 0; r < n; r++) {
@@ -57,8 +58,13 @@ int update_errors_on_board(Board *board) {
 			val = board->game_table[r][c].val;
 			is_err = is_cell_valid(board, board->game_table, val, r, c);
 			board->game_table[r][c].is_err = is_err;
+			if (is_err) {
+				num_err += 1;
+			}
 		}
 	}
+
+	board->num_err = num_err;
 	return VALID;
 }
 
@@ -73,10 +79,13 @@ int filled_cell(Board *board, Game *game, int col, int row, int val) {
 	}
 
 	/* filled cell, either enter a new num of clear */
-	if (val == 0){ /* player asked to clear a cell */
+	if (val == UNASSIGNED){ 
+		if (board->game_table[row][col].val != UNASSIGNED) {
+			/* player asked to clear a cell - number of filled cells decreased */
+			board->filled = (new_filled - 1);
+		}
 		board->game_table[row][col].val = 0;
 		board->game_table[row][col].is_err = FALSE;
-		board->filled = (new_filled - 1); /* number of filled cells decreased by one */
 		print_board(board, game->mark_err);
 	}
 
@@ -126,7 +135,7 @@ void play_set(struct Command command, Board *board, Game *game){
 		return;
 	}
 
-	clear_beyond_moves_in_list(game);
+	/*clear_beyond_moves_in_list(game);*/
 
 	filled_cell(board, game, X-1 , Y-1, Z);
 	return;
@@ -248,7 +257,7 @@ Game *init_game(){
 	}
 
 	game->mark_err = TRUE; /* by default, the value is 1 */
-	game->game_mode = Init;
+	game->game_mode = INIT;
 	return game;
 }
 
