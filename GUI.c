@@ -138,3 +138,58 @@ int print_err_cell_assigned() {
 	printf("Error: cell already contains a value\n");
 	return VALID;
 }
+
+int print_err_no_moves_to_undo() {
+	printf("Error: no moves to undo\n");
+	return VALID;
+}
+
+int print_undo_move(Move_l *curr_move) {
+	Changes_n *change;
+
+	change = curr_move->first_change;
+	if (change->next != NULL) {
+		if (change->val_after == 0) {
+			printf("Undo %d,%d: from _ to %d\n", change->row, change->col,
+			       	change->val_before);
+		}
+		else if (change->val_before == 0) {
+			printf("Undo %d,%d: from %d to _\n", change->row, change->col,
+			       	change->val_after);
+		}
+		else {
+			printf("Undo %d,%d: from %d to %d\n", change->row, change->col,
+					change->val_after, change->val_before);
+		}
+		change = change->next;
+	}
+	return VALID;
+}
+
+int print_err_no_moves_to_redo() {
+	printf("Error: no moves to redo\n");
+	return VALID;
+}
+
+int print_redo_move(Move_l *curr_move) {
+	Changes_n *change;
+
+	change = curr_move->first_change;
+	if (change->next != NULL) {
+		if (change->val_after == 0) {
+			printf("Redo %d,%d: from %d to _\n", change->row, change->col,
+			       	change->val_before);
+		}
+		else if (change->val_before == 0) {
+			printf("Undo %d,%d: from _ to %d\n", change->row, change->col,
+			       	change->val_after);
+		}
+		else {
+			printf("Undo %d,%d: from %d to %d\n", change->row, change->col,
+					change->val_before, change->val_after);
+		}
+		change = change->next;
+	}
+	return VALID;
+}
+

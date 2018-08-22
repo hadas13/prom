@@ -44,4 +44,13 @@ int print_err_row_col_not_in_range();
 int print_err_board_contains_error();
 
 int print_err_cell_assigned();
+
+int print_err_no_moves_to_undo();
+
+int print_undo_move(Move_l *curr_move);
+
+int print_err_no_moves_to_redo();
+
+int print_redo_move(Move_l *curr_move);
+
 #endif /* GAME_H_ */

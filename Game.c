@@ -135,7 +135,8 @@ void play_set(struct Command command, Board *board, Game *game){
 		return;
 	}
 
-	/*clear_beyond_moves_in_list(game);*/
+	add_new_move(game->curr_move, Y, X, Z, board->game_table[Y-1][X-1].val);
+
 
 	filled_cell(board, game, X-1 , Y-1, Z);
 	return;

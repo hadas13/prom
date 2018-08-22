@@ -1,26 +1,26 @@
 #include "defines.h"
 #include "Game.h"
 #include "GUI.h"
+/******* functions *******/
 
-/***** moves linked-list structures *******/
-typedef struct _move_node {
-	int row;
-	int col;
-	int val_before;
-	int val_after;
-	struct _move_node *next;
-} Changes_n;
+Dll *init_list();
 
-typedef struct _move_list {
-	int num_changes;
-	Changes_n *first_change;
-	struct _move *next;
-	struct _move *prev;
-} Move_l;
+Changes_n *get_last_change_of_move(Move_l *move);
 
-typedef struct _dll {
-	/*int num_node;*/
-	Move_l *first;
-	Move_l *curr_move;
-} Dll;
+/*
+ * @param move: the move node in the linked list that we are adding a change in the board to.
+ * @param r: the row that the change was done to.
+ * @param c: the column that the change was done to.
+ * @param val_before: the value in the board before the change.
+ * @param val_after: the value in the board after the change.
+ * @return value: success or fauiler.
+ */
+int add_last_change_to_move(Move_l *move, int r, int c, int val_before, int val_after);
 
+int free_all_next_moves(Move_l *move);
+
+Move_l *add_new_move(Move_l *curr_move, int r, int c, int val_before, int val_after);
+
+int undo(Move_l *curr_move, Board *board, Game *game);
+
+int redo(Move_l *curr_move, Board *board, Game *game);
