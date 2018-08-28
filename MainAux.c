@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <ctype.h> /*** NEW NEW NEW NEW NEW ***/
+#include "MainAux.h"
 
 
 int string_to_int(char *string){
@@ -8,15 +8,27 @@ int string_to_int(char *string){
 	return (num);
 }
 
-int is_numeric_string(char *string){
-	int i = 0;
-	int numeric = 1;
-	while (string[i] != '\0'){
-		if (!isdigit(string[i])){
-			numeric = 0;
-			break;
+int save_file_to(FILE *fd, Board *board, int mode) {
+	int r, c;
+	/* write the rows number and the columns number */
+	fprintf(fd, "%d %d\n", board->m_rows, board->m_cols);
+
+	for (r = 0; r < board->n; r++) {
+		for (c = 0; c < board->n; c++) {
+			fprintf(fd, "%d", board->game_table[r][c].val);
+			if ((mode == EDIT) || (board->game_table[r][c].is_fixed)) {
+				/* marked as fixed */
+				fprintf(fd, ".");
+			}
+
+			if (c != (board->n-1)) {
+				/* not end of column */
+				fprintf(fd, " ");
+			}
 		}
-		i += 1;
+		/* ended row */
+		fprintf(fd, "\n");
 	}
-	return numeric;
+	return VALID;
 }
+

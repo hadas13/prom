@@ -120,6 +120,7 @@ int undo_curr_move(Move_l *curr_move, Board *board, Game *game) {
 		change = change->next;
 	}
 	update_errors_on_board(board);
+	game->curr_move = curr_move->prev;
 	return VALID;
 }
 
@@ -153,6 +154,9 @@ int redo_curr_move(Move_l *curr_move, Board *board, Game *game) {
 		change = change->next;
 	}
 	update_errors_on_board(board);
+	if (curr_move->next != NULL) {
+		game->curr_move = curr_move->next;
+	}
 	return VALID;
 }
 

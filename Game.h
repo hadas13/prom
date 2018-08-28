@@ -6,6 +6,9 @@
 #include "Solver.h"
 #include "GUI.h"
 #include "linked_list.h"
+#include "MainAux.h"
+#include "Backtracking.h"
+
 
 /*
  * Function that receives a struct containing the board game and its dimensions
@@ -61,5 +64,8 @@ int get_fixed();
 void print_board(Board *board, int print_err);
 
 int update_errors_on_board(Board *board);
+
+
+Board *autofill(Board *board, int to_print);
 
 #endif /* GAME_H_ */

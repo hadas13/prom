@@ -16,9 +16,8 @@ int free_matrix(Cell **mat, int n){
 	return VALID;
 }
 
-int clean_up(Board *board){
+int free_board(Board *board){
 	free_matrix(board->game_table, board->n);
-	free_matrix(board->solution, board->n);
 	free(board);
 
 	return VALID;
@@ -55,7 +54,7 @@ int init_game_table(Board *board){
 	board->game_table = calloc(n, sizeof *board->game_table);
 	if (board->solution == NULL) {
 		print_calloc_failed_err();
-		clean_up(board);
+		free_board(board);
 		exit(0);
 	}
 
@@ -63,7 +62,7 @@ int init_game_table(Board *board){
 	       board->game_table[i] = (Cell *)calloc(n, sizeof(*board->game_table[i]));	
 	       if (board->game_table[i] == NULL) {
 		       print_calloc_failed_err();
-		       clean_up(board);
+		       free_board(board);
 		       exit(0);
 	       }
 	}
@@ -334,7 +333,7 @@ int solve_cell_randomly(Board *board, int row, int column) {
 	num_arr = (int *)calloc((n + 1), sizeof(int));
 	if (num_arr == NULL) {
 		printf("Error: calloc has failed\n");
-		clean_up(board);
+		free_board(board);
 		exit(NOT_VALID);
 	}
 
@@ -405,7 +404,7 @@ int init_solution_board(Board *board){
 	       board->solution[i] = calloc(n, sizeof(*board->solution[i]));	
 		if (board->solution[i] == NULL) {
 			printf("Error: calloc has failed\n");
-			clean_up(board);
+			free_board(board);
 			exit(0);
 		}
 	}
@@ -428,7 +427,7 @@ Board *init_board(int n, int m_rows, int m_cols, int fixed_nums){
 	board = malloc(sizeof(Board));
 	if (board == NULL){
 		print_malloc_failed_err();
-		clean_up(board);
+		free_board(board);
 		return NOT_VALID;
 	}
 
@@ -437,12 +436,12 @@ Board *init_board(int n, int m_rows, int m_cols, int fixed_nums){
 	board->m_cols = m_cols;
 	board->filled = fixed_nums;
 	if (init_solution_board(board) != VALID){
-		clean_up(board);
+		free_board(board);
 		return NULL;
 	}
 
 	if (init_game_table(board) != VALID){
-		clean_up(board);
+		free_board(board);
 		return NULL;
 	}
 
@@ -495,7 +494,7 @@ int validate_game_table(Board *board) {
 	validation_board = calloc(board->n, sizeof *validation_board);
 	if (validation_board == NULL) {
 		printf("Error: calloc has failed\n");
-		clean_up(board);
+		free_board(board);
 		exit(NOT_VALID);
 	}
 
@@ -503,7 +502,7 @@ int validate_game_table(Board *board) {
 	       validation_board[i] = (Cell *)calloc(board->n, sizeof(*validation_board[i]));	
 	       if (validation_board[i] == NULL) {
 		       printf("Error: calloc has failed\n");
-		       clean_up(board);
+		       free_board(board);
 		       exit(NOT_VALID);
 	       }
 	}
