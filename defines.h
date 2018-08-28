@@ -35,6 +35,14 @@ typedef struct _dll {
 	Move_l *curr_move;
 } Dll;
 
+/******* board position structure *******/
+typedef struct _cell_item {
+	int row;
+	int col;
+	int val;
+} Cell_Item;
+
+
 typedef enum _mode{INIT, EDIT, SOLVE} Mode; 
 
 /***** game structures *******/

@@ -39,6 +39,8 @@ int print_err_value_not_in_range();
 
 int print_err_cell_is_fixed();
 
+int print_err_invalid_command();
+
 int print_err_row_col_not_in_range();
 
 int print_err_board_contains_error();
@@ -64,4 +66,11 @@ int print_err_cant_created_or_modified();
 int print_err_board_validate_failed();
 
 int print_save_file_to();
+
+int print_err_value_not_int_range_E(int e);
+
+int print_err_board_not_empty();
+
+int print_err_generator_failed();
+
 #endif /* GAME_H_ */

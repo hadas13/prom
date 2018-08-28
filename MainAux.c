@@ -8,6 +8,19 @@ int string_to_int(char *string){
 	return (num);
 }
 
+int is_numeric_string(char *string){
+	int i = 0;
+	int numeric = 1;
+	while (string[i] != '\0'){
+		if (!isdigit(string[i])){
+			numeric = 0;
+			break;
+		}
+		i += 1;
+	}
+	return numeric;
+}
+
 int save_file_to(FILE *fd, Board *board, int mode) {
 	int r, c;
 	/* write the rows number and the columns number */
@@ -28,6 +41,19 @@ int save_file_to(FILE *fd, Board *board, int mode) {
 		}
 		/* ended row */
 		fprintf(fd, "\n");
+	}
+	return VALID;
+}
+
+int clean_vals_from_board(Board *board) {
+	int c = 0;
+	int r = 0;
+	for(r = 0; r < board->n; r++) {
+		for(c = 0; c < board->n; c++) {
+			if (board->game_table[r][c].is_fixed == FALSE) {
+				board->game_table[r][c].val = UNASSIGNED;
+			}
+		}
 	}
 	return VALID;
 }

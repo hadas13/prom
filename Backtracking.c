@@ -85,6 +85,8 @@ int mark_board_as_fixed(Board *board) {
 			}
 		}
 	}
+
+	return VALID;
 }
 
 int push_possible_values_to_stack(Board *board, Stack *stack, int row, int col, int *how_many_added) {
@@ -110,17 +112,19 @@ int empty_all_next_cells(Board *board, Item *item) {
 
 	for(c = item->col; c < board->n; c++) {
 		if (board->game_table[item->row][c].is_fixed == FALSE) {
-			board->game_table[item->row][c].val = 0;
+			board->game_table[item->row][c].val = UNASSIGNED;
 		}
 	}
 
 	for (r = item->row; r < board->n; r++) {
 		for (c = item->col; c < board->n; c++) {
 			if (board->game_table[r][c].is_fixed == FALSE) {
-				board->game_table[r][c].val = 0;
+				board->game_table[r][c].val = UNASSIGNED;
 			}
 		}
 	}
+
+	return VALID;
 }
 
 int solve_by_backtracking(Board *board, Stack *stack, int *counter) {
@@ -165,9 +169,11 @@ int solve_by_backtracking(Board *board, Stack *stack, int *counter) {
 int count_solutions(Board *board) {
 	int r, c;
 	int is_empty_cell = TRUE;
-	int *sol_counter;
+	int *sol_counter = NULL;
 	Board *board_to_fill;
 	Stack *stack;
+
+	*sol_counter = 0;
 
 	board_to_fill = init_board(board->n, board->m_rows, board->m_cols, board->filled);
 	copy_board(board->game_table, board_to_fill->game_table, board->n);

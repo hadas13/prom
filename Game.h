@@ -9,6 +9,8 @@
 #include "MainAux.h"
 #include "Backtracking.h"
 
+#define NUM_ITER_GENERATE 1000 /* iterations num of generating x numbers in generate command */
+
 
 /*
  * Function that receives a struct containing the board game and its dimensions

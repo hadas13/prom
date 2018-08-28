@@ -14,7 +14,7 @@ int stop_game(Board *board){
 
 int play_mark_errors(Game *game, int is_mark) {
 	if (game->game_mode != SOLVE) {
-		printf("Error: invalid command\n"); /* decided if to do it here */
+		print_err_invalid_command();
 		return NOT_VALID;
 	}
 
@@ -83,7 +83,7 @@ int filled_cell(Board *board, Game *game, int col, int row, int val) {
 			/* player asked to clear a cell - number of filled cells decreased */
 			board->filled = (new_filled - 1);
 		}
-		board->game_table[row][col].val = 0;
+		board->game_table[row][col].val = UNASSIGNED;
 		board->game_table[row][col].is_err = FALSE;
 		print_board(board, game->mark_err);
 	}
@@ -100,7 +100,7 @@ int filled_cell(Board *board, Game *game, int col, int row, int val) {
 			board->game_table[row][col].is_err = FALSE;
 		}
 
-		if (board->game_table[row][col].val == 0){ /* an empty cell is filled */
+		if (board->game_table[row][col].val == UNASSIGNED){ /* an empty cell is filled */
 			board->filled = (new_filled + 1); /* number of filled cells increased by one */
 		}
 
@@ -175,48 +175,48 @@ int play_hint(struct Command command, Board *board){
 	return VALID;
 }
 
-void turn(struct Command command, Board *board, Game *game){
-	int validated;
+/*void turn(struct Command command, Board *board, Game *game){*/
+	/*int validated;*/
 
-	if (command.valid == FALSE){ /* invalid command, get new command */
-		printf("Error: invalid command\n");
-		command = get_command();
-		turn(command, board, game);
-	}
-	else{ /* valid command */
-		if ((board->filled == (board->n * board->n)) && (command.command != EXIT && command.command != RESTART)){
-			/* board is filled, disable all command but exit and restart */
-			printf("Error: invalid command\n");
-			command = get_command();
-			turn(command, board, game);
-		}
-		else { /* board is not filled, play according to command */
-			switch(command.command){
-				case SET:
-					play_set(command, board, game);
-					break;
-				case HINT:
-					play_hint(command, board);
-					break;
-				case VALIDATE:
-					validated = validate_game_table(board);
-					if (validated == TRUE){
-						printf("Validation passed: board is solvable\n");
-					}
-					else{
-						printf("Validation failed: board is unsolvable\n");
-					}
-					break;
-				case RESTART:
-					board->filled = ((board->n * board->n) + 2); /* indication to restart the game */
-					break;
-				case EXIT:
-					board->filled = ((board->n * board->n) + 1); /* indication to exit the game */
-					break;
-			}
-		}
-	}
-}
+	/*if (command.valid == FALSE){ [> invalid command, get new command <]*/
+		/*print_err_invalid_command()*/
+		/*command = get_command();*/
+		/*turn(command, board, game);*/
+	/*}*/
+	/*else{ [> valid command <]*/
+		/*if ((board->filled == (board->n * board->n)) && (command.command != EXIT && command.command != RESTART)){*/
+			/*[> board is filled, disable all command but exit and restart <]*/
+			/*print_err_invalid_command();*/
+			/*command = get_command();*/
+			/*turn(command, board, game);*/
+		/*}*/
+		/*else { [> board is not filled, play according to command <]*/
+			/*switch(command.command){*/
+				/*case SET:*/
+					/*play_set(command, board, game);*/
+					/*break;*/
+				/*case HINT:*/
+					/*play_hint(command, board);*/
+					/*break;*/
+				/*case VALIDATE:*/
+					/*validated = validate_game_table(board);*/
+					/*if (validated == TRUE){*/
+						/*printf("Validation passed: board is solvable\n");*/
+					/*}*/
+					/*else{*/
+						/*printf("Validation failed: board is unsolvable\n");*/
+					/*}*/
+					/*break;*/
+				/*case RESTART:*/
+					/*board->filled = ((board->n * board->n) + 2); [> indication to restart the game <]*/
+					/*break;*/
+				/*case EXIT:*/
+					/*board->filled = ((board->n * board->n) + 1); [> indication to exit the game <]*/
+					/*break;*/
+			/*}*/
+		/*}*/
+	/*}*/
+/*}*/
 
 int get_fixed(){
 	int fixed = -1;
@@ -427,3 +427,101 @@ int play_save(Board *board, Game *game, char *path) {
 	/*return VALID;*/
 
 /*}*/
+
+int check_generate_valid(Game *game, Board *board, int x, int y) {
+	int n = board->n;
+	int unfilled_cells = n*n - board->filled;
+
+	/* TODO - decide if it suppose to be here */
+	if (game->game_mode != EDIT) {
+		print_err_invalid_command();
+		return NOT_VALID;
+	}
+
+	else if (board->filled != 0) {
+		print_err_board_not_empty();
+		return NOT_VALID;
+	}
+
+	else if (x > unfilled_cells || x < 0 || y > unfilled_cells || y < 0) { 
+		print_err_value_not_int_range_E(unfilled_cells);
+		return NOT_VALID;
+	}
+
+	return VALID;
+}
+
+int position_not_in_arr(int row, int col, Cell_Item *x_cells_arr, int num_cells_to_check){
+	int i;
+	for (i = 0; i < num_cells_to_check; i++) {
+		if (x_cells_arr[i].row == row && x_cells_arr[i].col == col) {
+			/* the given position in the array */
+			return FALSE;
+		}
+	}
+	/* the given position not in the array */
+	return TRUE;
+}
+
+
+
+int fill_x_empty_cells(Cell_Item *num_cells_arr, int num, Board *board) {
+	int n = board->n;
+	int counter = 0;
+	int row, col, val;
+	srand(n);
+	while (counter != num - 1) {
+		row = rand();
+		col = rand();
+		while (position_not_in_arr(row, col, num_cells_arr, counter) == FALSE) {
+			row = rand();
+			col = rand();
+		}
+		num_cells_arr[counter].row = row;
+		num_cells_arr[counter].col = col;
+		val = get_random_legal_val(board);
+		/*val = UNASSIGNED;*/
+		if (num_cells_arr[counter].val == UNASSIGNED) {
+			/* didn't find a legal value for the cell */
+			return NOT_VALID;
+
+		num_cells_arr[counter].val = get_random_legal_val(board);
+		counter += 1;
+	}
+	return VALID;
+}
+
+int play_generate(Game *game, Board *board, int x, int y){
+	Cell_Item *x_cells_arr = NULL;
+	int iter;
+
+	if (check_generate_valid(game, board, x, y) == NOT_VALID) {
+		return NOT_VALID;
+	}
+
+	x_cells_arr = (Cell_Item *)malloc(x*sizeof(Cell_Item));
+	if (x_cells_arr == NULL){
+		print_malloc_failed_err();
+		exit(NOT_VALID);
+	}
+
+	for (iter = 0; iter < NUM_ITER_GENERATE; iter++) {
+		if ((fill_x_empty_cells(x_cells_arr, x, board) == VALID) &&
+				solve_board(board, RUN_GENERATE)) {
+			/*TODO - remove Y cells */
+			/* succed generating board */
+			print_board(board, game->mark_err);
+			free(x_cells_arr);
+			return VALID;
+		}
+
+		clean_vals_from_board(board);
+	}
+
+	print_err_generator_failed();
+	clean_vals_from_board(board);
+	free(x_cells_arr);
+	return NOT_VALID;
+
+}
+

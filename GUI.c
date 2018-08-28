@@ -124,6 +124,11 @@ int print_err_cell_is_fixed() {
 	return VALID;
 }
 
+int print_err_invalid_command() {
+	printf("Error: invalid command\n");
+	return VALID;
+}
+
 int print_err_row_col_not_in_range() {
 	printf("Error: value not in range 1-N\n");
 	return VALID;
@@ -215,5 +220,20 @@ int print_err_cant_created_or_modified() {
 
 int print_save_file_to(char *path) {
 	printf("Saved to: %s\n", path);
+	return VALID;
+}
+
+int print_err_value_not_int_range_E(int e) {
+	printf("Error: value not in range 0-%d\n", e);
+	return VALID;
+}
+
+int print_err_board_not_empty() {
+	printf("Error: board is not empty\n");
+	return VALID;
+}
+
+int print_err_generator_failed() {
+	printf("Error: puzzle generator failed\n");
 	return VALID;
 }
