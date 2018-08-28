@@ -35,7 +35,6 @@ int is_row_col_param_valid(int N, int X, int Y) {
 }
 
 int is_set_param_valid(int N, int X, int Y, int Z) {
-	/* TODO - find out how to check if X Y Z is int */
 	if (!is_row_col_param_valid(N, X, Y)) {
 		return NOT_VALID;
 	}
@@ -118,8 +117,7 @@ int filled_cell(Board *board, Game *game, int col, int row, int val) {
 }
 
 void play_set(struct Command command, Board *board, Game *game){
-	/* TODO - 1- need to check if X, Y, Z are integers or not
-	 *	  2- needs to handle after inserting - ending game  */
+	/* TODO - 1- needs to handle after inserting - ending game  */
 
 	int X = command.X;
 	int Y = command.Y;
@@ -271,7 +269,7 @@ int check_and_change_one_sol_cell(Cell **checking_board, int row, int col, Board
 	num_opt = (int *)(calloc((n + 1), sizeof(int)));
 	if (num_opt == NULL){
 		print_calloc_failed_err();
-		clean_up(board);
+		free_board(board);
 		exit(0);
 	}
 
@@ -299,8 +297,7 @@ int check_and_change_one_sol_cell(Cell **checking_board, int row, int col, Board
 	return changed;
 }
 	
-
-Board *autofill(Board *board) {
+Board *autofill(Board *board, int to_print) {
 	int r, c;
 	int changed = FALSE;
 	Board *new_board;
@@ -321,13 +318,14 @@ Board *autofill(Board *board) {
 		for (c = 0; c < board->n; c++){
 			if (board->game_table[r][c].val == UNASSIGNED) {
 				changed = check_and_change_one_sol_cell(board->game_table, r, c, new_board);
-				if (changed){
+				if (changed && to_print){
 					printf("Cell <%d,%d> set to %d\n",
 					       	r + 1, c + 1, new_board->game_table[r][c].val);
 				}
 			}
 		}
 	}
+	free_board(board);
 	return new_board;
 }
 
@@ -345,7 +343,7 @@ void play(){
 	board = init_board(total_cells, rows, cols, fixed); /* initial board */
 	print_board(board, game->mark_err);
 
-	board = autofill(board);
+	board = autofill(board, TRUE);
 
 	while (!stop_game(board)){ /* keep playing */
 		if (board->filled == (board->n * board->n)){ /* the player won */
@@ -360,13 +358,72 @@ void play(){
 		turn(command, board, game);
 	}
 	if (board->filled == ((board->n * board->n) + 2)){ /* restart command */
-		clean_up(board);
+		free_board(board);
 		play();
 	}
 	else{ /* exit command */
 		printf("Exiting...\n");
-		clean_up(board);
+		free_board(board);
 	}
 }
 
 
+int play_num_solutions(Board *board) {
+	int num_sol = 0;
+
+	if (board->num_err != 0) {
+		print_board_contains_error();
+		return NOT_VALID;
+	}
+
+	num_sol = count_solutions(board);
+	print_number_of_solutions(num_sol);
+	
+	if (num_sol == 1) {
+		print_notify_one_solution();
+	}
+
+	else {
+		print_notify_more_solutions();
+	}
+
+	return VALID;
+}
+
+int play_save(Board *board, Game *game, char *path) {
+	FILE *fd;
+	int is_save = FALSE;
+
+	if (game->game_mode == EDIT) {
+		if (board->num_err != 0) {
+			print_board_contains_error();
+			return NOT_VALID;
+		}
+		/* TODO - check it with omer */
+		/*if (validate(board, RUN_VALIDATE) != VALID) {*/
+                               /*print_err_board_validate_failed();*/
+			/*return NOT_VALID;*/
+		/*}*/
+	}
+
+	fd = fopen(path, "w");
+
+	if (fd == NULL) {
+		/* got an error */
+		print_err_cant_created_or_modified();
+		return NOT_VALID;
+	}
+
+	is_save = save_file_to(fd, board, game->game_mode);
+	if (is_save) {
+		print_save_file_to(path);
+	}
+
+	fclose(fd);
+	return VALID;
+}
+
+/*int play_solve(char *path) {*/
+	/*return VALID;*/
+
+/*}*/

@@ -47,7 +47,7 @@ int free_matrix(Cell **mat, int n);
  * @param board: the game struct to free.
  * @return value: after freeing - returns VALID.
  */
-int clean_up(Board *board);
+int free_board(Board *board);
 
 
 /*
