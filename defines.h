@@ -9,10 +9,6 @@
 #define NOT_VALID  0
 #define UNASSIGNED 0
 
-#define RUN_VALIDATE 1
-#define RUN_GENERATE 2
-#define RUN_HINT     3
-
 /***** moves linked-list structures *******/
 typedef struct _move_node {
 	int row;
@@ -60,5 +56,5 @@ typedef struct _game_parameters {
 	Dll play_list;
 	Move_l *curr_move;
 } Game;
-
+	
 #endif

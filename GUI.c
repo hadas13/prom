@@ -181,11 +181,11 @@ int print_redo_move(Move_l *curr_move) {
 			       	change->val_before);
 		}
 		else if (change->val_before == 0) {
-			printf("Redo %d,%d: from _ to %d\n", change->row, change->col,
+			printf("Undo %d,%d: from _ to %d\n", change->row, change->col,
 			       	change->val_after);
 		}
 		else {
-			printf("Redo %d,%d: from %d to %d\n", change->row, change->col,
+			printf("Undo %d,%d: from %d to %d\n", change->row, change->col,
 					change->val_before, change->val_after);
 		}
 		change = change->next;
@@ -193,27 +193,3 @@ int print_redo_move(Move_l *curr_move) {
 	return VALID;
 }
 
-int print_number_of_solutions(int num_sol) {
-	printf("Number of solutions: %d\n", num_sol);
-	return VALID;
-}
-
-int print_notify_one_solution() {
-	printf("This is a good board!\n");
-	return VALID;
-}
-
-int print_notify_more_solutions() {
-	printf("The puzzle has more that 1 solution, try to edit it further\n");
-	return VALID;
-}
-
-int print_err_cant_created_or_modified() {
-	printf("Error: File cannot be created or modified\n");
-	return VALID;
-}
-
-int print_save_file_to(char *path) {
-	printf("Saved to: %s\n", path);
-	return VALID;
-}

@@ -53,15 +53,4 @@ int print_err_no_moves_to_redo();
 
 int print_redo_move(Move_l *curr_move);
 
-int print_number_of_solutions(int num_sol);
-
-int print_notify_one_solution();
-
-int print_notify_more_solutions();
-
-int print_err_cant_created_or_modified();
-
-int print_err_board_validate_failed();
-
-int print_save_file_to();
 #endif /* GAME_H_ */
