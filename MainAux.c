@@ -57,4 +57,3 @@ int clean_vals_from_board(Board *board) {
 	}
 	return VALID;
 }
-

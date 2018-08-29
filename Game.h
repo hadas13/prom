@@ -10,6 +10,7 @@
 #include "Backtracking.h"
 
 #define NUM_ITER_GENERATE 1000 /* iterations num of generating x numbers in generate command */
+#define NOT_POSSIBLE_VAL -1
 
 
 /*
