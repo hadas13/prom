@@ -505,36 +505,104 @@ int get_random_legal_val(Board *board, int row, int col) {
 }
 
 
-int fill_num_empty_cells(Cell_Item *num_cells_arr, int num, Board *board) {
+int update_board_with_cells_arr(Cell_Item *arr, Board *board, int num_cells) {
+	int i;
+	int r, c, val;
+	for (i = 0; i < num_cells; i++) {
+		r = arr[i].row;
+		c = arr[i].col;
+		val = arr[i].val;
+		/* update board */
+		board->game_table[r][c].val = val;
+		board->game_table[r][c].is_err = FALSE;
+		board->game_table[r][c].is_fixed = FALSE; /* TODO check if it suppuse to be fixed or not */
+	}
+
+	update_errors_on_board(board);
+	if (board->num_err != 0) {
+		/* something went worng - have a error in the board that shouldn't be */
+		return NOT_VALID;
+	}
+	return VALID;
+}
+
+int fill_x_empty_cells(Board *board, int x) {
+	Cell_Item *x_cells_arr = NULL;
 	int n = board->n;
 	int counter = 0;
 	int rand_row, rand_col, rand_val;
 	srand(n); /* TODO - check if we supposed to insert a seed */
-	while (counter != num - 1) {
+
+	x_cells_arr = (Cell_Item *)malloc(x*sizeof(Cell_Item));
+	if (x_cells_arr == NULL){
+		print_malloc_failed_err();
+		exit(NOT_VALID);
+	}
+
+	while (counter != x) {
 		rand_row = rand() % n;
 		rand_col = rand() % n;
-		while (is_free_cell_position(rand_row, rand_col, num_cells_arr, counter) == FALSE) {
+		while (is_free_cell_position(rand_row, rand_col, x_cells_arr, counter) == FALSE) {
 			rand_row = rand();
 			rand_col = rand();
 		}
-		num_cells_arr[counter].row = rand_row;
-		num_cells_arr[counter].col = rand_col;
+		x_cells_arr[counter].row = rand_row;
+		x_cells_arr[counter].col = rand_col;
 		rand_val = get_random_legal_val(board, rand_row, rand_col);
 		if (rand_val == NOT_POSSIBLE_VAL) {
 			/* didn't find a legal value for the cell */
 			return NOT_VALID;
 		}
 
-		num_cells_arr[counter].val = rand_val;
+		x_cells_arr[counter].val = rand_val;
 		counter += 1;
 	}
+
+	if (update_board_with_cells_arr(x_cells_arr, board, x) == NOT_VALID) {
+		free(x_cells_arr);
+		return NOT_VALID;
+	}
+
+	free(x_cells_arr);
 	return VALID;
 }
 
-int remove_num_cells(Board *board, int num_to_remove) {
-	/*TODO - needs to fill it up */
+int remove_y_cells(Board *board, int y) {
+	Cell_Item *y_cells_arr = NULL;
+	int n = board->n;
+	int counter = 0;
+	int rand_row, rand_col;
+	srand(n); /* TODO - check if we supposed to insert a seed */
+
+	y_cells_arr = (Cell_Item *)malloc(y*sizeof(Cell_Item));
+	if (y_cells_arr == NULL){
+		print_malloc_failed_err();
+		exit(NOT_VALID);
+	}
+
+	while (counter != y) {
+		rand_row = rand() % n;
+		rand_col = rand() % n;
+		while (is_free_cell_position(rand_row, rand_col, y_cells_arr, counter) == FALSE) {
+			rand_row = rand();
+			rand_col = rand();
+		}
+		y_cells_arr[counter].row = rand_row;
+		y_cells_arr[counter].col = rand_col;
+		/* empty cell value */
+		y_cells_arr[counter].val = UNASSIGNED;
+		counter += 1;
+	}
+
+	if (update_board_with_cells_arr(y_cells_arr, board, y) == NOT_VALID) {
+		free(y_cells_arr);
+		return NOT_VALID;
+	}
+
+	free(y_cells_arr);
 	return VALID;
 }
+
 
 int play_generate(Game *game, Board *board, int x, int y){
 	Cell_Item *x_cells_arr = NULL;
@@ -544,17 +612,14 @@ int play_generate(Game *game, Board *board, int x, int y){
 		return NOT_VALID;
 	}
 
-	x_cells_arr = (Cell_Item *)malloc(x*sizeof(Cell_Item));
-	if (x_cells_arr == NULL){
-		print_malloc_failed_err();
-		exit(NOT_VALID);
-	}
+
 
 	for (iter = 0; iter < NUM_ITER_GENERATE; iter++) {
-		if ((fill_num_empty_cells(x_cells_arr, x, board) == VALID) &&
-			solve_board(board, RUN_GENERATE)) {
+		if ((fill_x_empty_cells(board, x) == VALID)) {
+		/*if ((fill_x_empty_cells(board, x) == VALID) &&*/
+			/*solve_board(board, RUN_GENERATE)) {*/
 			/* generated full board */
-			remove_num_cells(board, y);
+			remove_y_cells(board, y);
 			print_board(board, game->mark_err);
 			free(x_cells_arr);
 			return VALID;
