@@ -17,7 +17,7 @@ int print_errorneous_err();
 
 int print_cell_fixed_err();
 
-int print_unsolvable_err();
+int print_err_unsolvable();
 
 int print_num_of_solutions(int num);
 
@@ -73,4 +73,5 @@ int print_err_board_not_empty();
 
 int print_err_generator_failed();
 
+int print_hint(int clue);
 #endif /* GAME_H_ */

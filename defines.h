@@ -54,7 +54,6 @@ typedef struct _cell {
 
 typedef struct _board {
 	Cell **game_table;
-	Cell **solution;
 	int n;
 	int m_rows;
 	int m_cols;

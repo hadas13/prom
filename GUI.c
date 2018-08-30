@@ -12,7 +12,7 @@ int print_cell_fixed_err(){
 	return VALID;
 }
 
-int print_unsolvable_err(){
+int print_err_unsolvable(){
 	printf(UNSOLVABLE_ERR);
 	return VALID;
 }
@@ -90,14 +90,14 @@ void print_board(Board *board, int mark_err){
 	int m_r = board->m_rows; /* num of cells in a row of block */
 	int i = 0;
 	int j = 0;
-	Cell cell;
+	/*Cell cell;*/
 
 	print_frame(board); /* print the top frame line */
 	for (i = 0; i < n; i++){
 		printf("|"); /* start a block */
 		for (j = 0; j < n;j++){
-			cell = board->game_table[i][j];
-			print_cell(cell, mark_err);
+			/*cell = board->game_table[i][j];*/
+			print_cell(board->game_table[i][j], mark_err);
 			if ((j+1) % m_c == 0){ /* frame of block */
 				printf(" |");
 			}
@@ -235,5 +235,10 @@ int print_err_board_not_empty() {
 
 int print_err_generator_failed() {
 	printf("Error: puzzle generator failed\n");
+	return VALID;
+}
+
+int print_hint(int clue) {
+	printf("Hint: set cell to %d\n", clue);
 	return VALID;
 }

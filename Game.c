@@ -1,6 +1,76 @@
 #include <stdio.h>
 #include "Game.h"
 
+Cell init_cell() {
+	Cell init_cell;
+	init_cell.val = 1;
+	init_cell.is_fixed = 0;
+	init_cell.is_err = 0;
+
+	return init_cell;
+
+}
+
+int init_game_table(Board *board){
+	int i;
+	int n = board->n;
+
+	board->game_table = (Cell **)malloc(n*sizeof(Cell *));
+	if (board->game_table == NULL) {
+		print_malloc_failed_err();
+		free_board(board);
+		exit(0);
+	}
+
+	for (i = 0; i < n; i++) {
+	       board->game_table[i] = (Cell *)malloc(n*sizeof(Cell));	
+	       if (board->game_table[i] == NULL) {
+		       print_malloc_failed_err();
+		       free_board(board);
+		       exit(0);
+	       }
+	}
+
+	return VALID;
+}
+
+
+Board *init_board(int n, int m_rows, int m_cols, int filled) {
+	Board *board = NULL;
+
+	board = (Board *)malloc(sizeof(Board));
+	if (board == NULL) {
+		print_malloc_failed_err();
+		return NULL;
+	}
+
+	board->n = n;
+	board->m_rows = m_rows;
+	board->m_cols = m_cols;
+	board->filled = filled;
+
+	if (init_game_table(board) != VALID) {
+		free_board(board);
+		return NULL;
+	}
+	clean_vals_from_board(board);
+	return board;
+}
+
+Game *init_game(){
+	Game *game = NULL;
+
+	game = (Game *)malloc(sizeof(Game));
+	if (game == NULL){
+		print_malloc_failed_err();
+		exit(NOT_VALID);
+	}
+
+	game->mark_err = TRUE; /* by default, the value is 1 */
+	game->game_mode = INIT;
+	return game;
+}
+
 int stop_game(Board *board){
 	int stop;
 	if (board->filled > (board->n * board->n)){ /* indicate exit of restart commands */
@@ -26,6 +96,7 @@ int play_mark_errors(Game *game, int is_mark) {
 	game->mark_err = is_mark;
 	return VALID;
 }
+
 int is_row_col_param_valid(int N, int X, int Y) {
 	if (X < 1 || X > N || Y < 1 || Y > N) {
 		return NOT_VALID;
@@ -55,7 +126,7 @@ int update_errors_on_board(Board *board) {
 	for (r = 0; r < n; r++) {
 		for (c = 0; c < n; c++) {
 			val = board->game_table[r][c].val;
-			is_err = is_cell_valid(board, board->game_table, val, r, c);
+			is_err = !is_cell_valid(board, board->game_table, val, r, c);
 			board->game_table[r][c].is_err = is_err;
 			if (is_err) {
 				num_err += 1;
@@ -142,10 +213,10 @@ void play_set(struct Command command, Board *board, Game *game){
 }
 
 int play_hint(struct Command command, Board *board){
-	/* TODO - check how to detrmine if X, Y are integers */
 	int X = command.X;
 	int Y = command.Y;
 	int clue = 0;
+	/*int row, col;*/
 
 	if (!is_row_col_param_valid(board->n, X, Y)) {
 		print_err_row_col_not_in_range();
@@ -157,21 +228,26 @@ int play_hint(struct Command command, Board *board){
 		return NOT_VALID;
 	}
 	
-	else if (board->solution[Y-1][X-1].is_fixed) {
+	else if (board->game_table[Y-1][X-1].is_fixed) {
 		print_err_cell_is_fixed();
 		return NOT_VALID;
 	}
 
-	else if (board->solution[Y-1][X-1].val != UNASSIGNED) {
+	else if (board->game_table[Y-1][X-1].val != UNASSIGNED) {
 		print_err_cell_assigned();
 		return NOT_VALID;
 	}
-	
-	/* TODO - decide if we are using 2 board - one for solution, or we
-	 * just running ILP here */
 
-	clue = board->solution[Y-1][X-1].val;
-	printf("Hint: set cell to %d\n", clue);
+	/*row = Y - 1;*/
+	/*col = X - 1;*/
+	/*clue = run_ILP(board, RUN_HINT, row, col);*/
+	
+	if (clue == NOT_VALID) {
+		print_err_unsolvable();
+		return NOT_VALID;
+	}
+
+	print_hint(clue);
 	return VALID;
 }
 
@@ -217,48 +293,6 @@ int play_hint(struct Command command, Board *board){
 		/*}*/
 	/*}*/
 /*}*/
-
-int get_fixed(){
-	int fixed = -1;
-	printf("Please enter the number of cells to fill [0-80]:\n");
-	if (scanf("%d", &fixed) < 0){
-		if (fixed == EOF){ /* EOF */
-			printf("Exiting...\n");
-		}
-		else{ /* scanf failed */
-			printf("Error: scanf has failed\n");
-		}
-		exit(0);
-	}
-	while (fixed < 0 || fixed > 80){ /* fixed cell is invalid number */
-		printf("Error: Invalid number of cells to fill (should be between 0 and 80)\n");
-		printf("Please enter the number of cells to fill [0-80]:\n");
-		if (scanf("%d", &fixed) < 0){
-				if (fixed == EOF){ /* EOF */
-					printf("Exiting...\n");
-				}
-				else{ /* scanf failed */
-					printf("Error: scanf has failed\n");
-				}
-				exit(0);
-			}
-		}
-	return (fixed);
-}
-
-Game *init_game(){
-	Game *game = NULL;
-
-	game = (Game *)malloc(sizeof(Game));
-	if (game == NULL){
-		print_malloc_failed_err();
-		exit(NOT_VALID);
-	}
-
-	game->mark_err = TRUE; /* by default, the value is 1 */
-	game->game_mode = INIT;
-	return game;
-}
 
 int check_and_change_one_sol_cell(Cell **checking_board, int row, int col, Board *board){
 	int changed = FALSE;
@@ -306,7 +340,7 @@ Board *autofill(Board *board, int to_print) {
 		return NOT_VALID;
 	}
 
-	if (board->num_err > 0) {
+	if (board->num_err != 0) {
 		print_board_contains_error();
 		return NOT_VALID;
 	}
@@ -320,52 +354,53 @@ Board *autofill(Board *board, int to_print) {
 				changed = check_and_change_one_sol_cell(board->game_table, r, c, new_board);
 				if (changed && to_print){
 					printf("Cell <%d,%d> set to %d\n",
-					       	r + 1, c + 1, new_board->game_table[r][c].val);
+					       	c + 1, r + 1, new_board->game_table[r][c].val);
 				}
 			}
 		}
 	}
 	free_board(board);
+	update_errors_on_board(new_board);
 	return new_board;
 }
 
-void play(){
-	int rows = 3; /* num of rows in a block */
-	int cols = 3; /* num of cols in a block */
-	int total_cells = (rows * cols); /* total numbers of cells in a line */
-	int fixed;
-	Board *board;
-	struct Command command;
-	Game *game;
+/*void play(){*/
+	/*int rows = 3; [> num of rows in a block <]*/
+	/*int cols = 3; [> num of cols in a block <]*/
+	/*int total_cells = (rows * cols); [> total numbers of cells in a line <]*/
+	/*int fixed;*/
+	/*Board *board;*/
+	/*[>struct Command command;<]*/
+	/*Game *game;*/
 
-	fixed = get_fixed(); /* num of fixed cell */
-	game = init_game();
-	board = init_board(total_cells, rows, cols, fixed); /* initial board */
-	print_board(board, game->mark_err);
+	/*fixed = get_fixed(); [> num of fixed cell <]*/
+	/*game = init_game();*/
+	/*board = init_board(total_cells, rows, cols, fixed); [> initial board <]*/
+	/*print_board(board, game->mark_err);*/
 
-	board = autofill(board, TRUE);
+	/*board = autofill(board, TRUE);*/
 
-	while (!stop_game(board)){ /* keep playing */
-		if (board->filled == (board->n * board->n)){ /* the player won */
-			printf("Puzzle solved successfully\n");
-			while(!stop_game(board)){ /* keep playing with only exit and restart commands */
-				command = get_command();
-				turn(command, board, game);
-			}
-			break;
-		}
-		command = get_command();
-		turn(command, board, game);
-	}
-	if (board->filled == ((board->n * board->n) + 2)){ /* restart command */
-		free_board(board);
-		play();
-	}
-	else{ /* exit command */
-		printf("Exiting...\n");
-		free_board(board);
-	}
-}
+	/*while (!stop_game(board)){ [> keep playing <]*/
+		/*if (board->filled == (board->n * board->n)){ [> the player won <]*/
+			/*printf("Puzzle solved successfully\n");*/
+			/*while(!stop_game(board)){ [> keep playing with only exit and restart commands <]*/
+				/*[>command = get_command();<]*/
+				/*[>turn(command, board, game);<]*/
+			/*}*/
+			/*break;*/
+		/*}*/
+		/*[>command = get_command();<]*/
+		/*[>turn(command, board, game);<]*/
+	/*}*/
+	/*if (board->filled == ((board->n * board->n) + 2)){ [> restart command <]*/
+		/*free_board(board);*/
+		/*play();*/
+	/*}*/
+	/*else{ [> exit command <]*/
+		/*printf("Exiting...\n");*/
+		/*free_board(board);*/
+	/*}*/
+/*}*/
 
 
 int play_num_solutions(Board *board) {
@@ -477,13 +512,13 @@ int get_random_legal_val(Board *board, int row, int col) {
 		exit(NOT_VALID);
 	}
 
-	get_possible_vals(board, board->solution, row, col, num_arr);
+	get_possible_vals(board, board->game_table, row, col, num_arr);
 	while(end_flag != TRUE){
 		switch(num_arr[n]) { /* num_arr[n] is the counter of possible nums for the cell*/
 			case (NON_OPTION):
 				/* no possible number for this cell */
 				free(num_arr);
-				board->solution[row][col].val = 0;
+				board->game_table[row][col].val = 0;
 				end_flag = TRUE;
 				return NOT_POSSIBLE_VAL;
 
@@ -632,6 +667,5 @@ int play_generate(Game *game, Board *board, int x, int y){
 	clean_vals_from_board(board);
 	free(x_cells_arr);
 	return NOT_VALID;
-
 }
 
