@@ -7,11 +7,6 @@
 #define ERROR -1
 #define VALID 1 
 
-#define CONTAINS_ERRORNEOUS_ERR "Error: board contains errorneous values\n"
-#define CELL_FIXED_ERR		"Error: cell is fixed\n"
-#define UNSOLVABLE_ERR		"Error: board is unsolvable\n"
-
-
 /*********** functions ***********/
 int print_errorneous_err();
 
@@ -74,4 +69,8 @@ int print_err_board_not_empty();
 int print_err_generator_failed();
 
 int print_hint(int clue);
+
+int print_validation_failed();
+
+int print_validation_passed();
 #endif /* GAME_H_ */

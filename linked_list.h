@@ -3,8 +3,6 @@
 #include "GUI.h"
 /******* functions *******/
 
-Dll *init_list();
-
 Changes_n *get_last_change_of_move(Move_l *move);
 
 /*
@@ -24,3 +22,5 @@ Move_l *add_new_move(Move_l *curr_move, int r, int c, int val_before, int val_af
 int undo(Move_l *curr_move, Board *board, Game *game);
 
 int redo(Move_l *curr_move, Board *board, Game *game);
+
+int free_all_moves(Move_l *curr_move);

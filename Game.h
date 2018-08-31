@@ -99,4 +99,9 @@ Board *autofill(Board *board, int to_print);
 
 int play_save(Board *board, Game *game, char *path);
 
+int play_num_solutions(Board *board);
+
+int play_generate(Game *game, Board *board, int x, int y);
+
+int free_game(Game *game);
 #endif /* GAME_H_ */

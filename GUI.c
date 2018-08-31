@@ -3,17 +3,17 @@
 
 
 int print_errorneous_err(){
-	printf(CONTAINS_ERRORNEOUS_ERR);
+	printf("Error: board contains errorneous values\n");
 	return VALID;
 }
 
 int print_cell_fixed_err(){
-	printf(CELL_FIXED_ERR);
+	printf("Error: cell is fixed\n");
 	return VALID;
 }
 
 int print_err_unsolvable(){
-	printf(UNSOLVABLE_ERR);
+	printf("Error: board is unsolvable\n");
 	return VALID;
 }
 
@@ -90,13 +90,11 @@ void print_board(Board *board, int mark_err){
 	int m_r = board->m_rows; /* num of cells in a row of block */
 	int i = 0;
 	int j = 0;
-	/*Cell cell;*/
 
 	print_frame(board); /* print the top frame line */
 	for (i = 0; i < n; i++){
 		printf("|"); /* start a block */
 		for (j = 0; j < n;j++){
-			/*cell = board->game_table[i][j];*/
 			print_cell(board->game_table[i][j], mark_err);
 			if ((j+1) % m_c == 0){ /* frame of block */
 				printf(" |");
@@ -240,5 +238,15 @@ int print_err_generator_failed() {
 
 int print_hint(int clue) {
 	printf("Hint: set cell to %d\n", clue);
+	return VALID;
+}
+
+int print_validation_failed() {
+	printf("Validation failed: board is unsolvable\n");
+	return VALID;
+}
+
+int print_validation_passed() {
+	printf("Validation passed: board is solvable\n");
 	return VALID;
 }

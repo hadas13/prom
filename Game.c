@@ -68,6 +68,7 @@ Game *init_game(){
 
 	game->mark_err = TRUE; /* by default, the value is 1 */
 	game->game_mode = INIT;
+	game->curr_move = NULL;
 	return game;
 }
 
@@ -435,7 +436,7 @@ int play_save(Board *board, Game *game, char *path) {
 			return NOT_VALID;
 		}
 		/* TODO - check it with omer */
-		/*if (validate(board, RUN_VALIDATE) != VALID) {*/
+		/*if (run_ILP(board, RUN_VALIDATE) != VALID) {*/
                                /*print_err_board_validate_failed();*/
 			/*return NOT_VALID;*/
 		/*}*/
@@ -457,11 +458,6 @@ int play_save(Board *board, Game *game, char *path) {
 	fclose(fd);
 	return VALID;
 }
-
-/*int play_solve(char *path) {*/
-	/*return VALID;*/
-
-/*}*/
 
 int check_generate_valid(Game *game, Board *board, int x, int y) {
 	int n = board->n;
@@ -502,7 +498,6 @@ int is_free_cell_position(int row, int col, Cell_Item *x_cells_arr, int num_cell
 int get_random_legal_val(Board *board, int row, int col) {
 	int *num_arr = NULL;
 	int n = board->n;
-	int end_flag = FALSE;
 	int next_num = NOT_POSSIBLE_VAL;
 
 	num_arr = (int *)calloc((n + 1), sizeof(int));
@@ -513,26 +508,21 @@ int get_random_legal_val(Board *board, int row, int col) {
 	}
 
 	get_possible_vals(board, board->game_table, row, col, num_arr);
-	while(end_flag != TRUE){
-		switch(num_arr[n]) { /* num_arr[n] is the counter of possible nums for the cell*/
-			case (NON_OPTION):
-				/* no possible number for this cell */
-				free(num_arr);
-				board->game_table[row][col].val = 0;
-				end_flag = TRUE;
-				return NOT_POSSIBLE_VAL;
+	switch(num_arr[n]) { /* num_arr[n] is the counter of possible nums for the cell*/
+		case (NON_OPTION):
+			/* no possible number for this cell */
+			free(num_arr);
+			board->game_table[row][col].val = 0;
+			return NOT_POSSIBLE_VAL;
 
-			case (SINGLE_OPTION):
-				next_num = get_first_option(num_arr, board->n, 0);
-				end_flag = TRUE;
-				break;
+		case (SINGLE_OPTION):
+			next_num = get_first_option(num_arr, board->n, 0);
+			break;
 
-			default:
-				/* more then one possible option - choose randomly a number */
-				next_num = get_random_option(num_arr, n);
-				end_flag = TRUE;
-				break;
-		}
+		default:
+			/* more then one possible option - choose randomly a number */
+			next_num = get_random_option(num_arr, n);
+			break;
 	}
 	
 	free(num_arr);
@@ -566,7 +556,6 @@ int fill_x_empty_cells(Board *board, int x) {
 	int n = board->n;
 	int counter = 0;
 	int rand_row, rand_col, rand_val;
-	srand(n); /* TODO - check if we supposed to insert a seed */
 
 	x_cells_arr = (Cell_Item *)malloc(x*sizeof(Cell_Item));
 	if (x_cells_arr == NULL){
@@ -577,9 +566,10 @@ int fill_x_empty_cells(Board *board, int x) {
 	while (counter != x) {
 		rand_row = rand() % n;
 		rand_col = rand() % n;
+
 		while (is_free_cell_position(rand_row, rand_col, x_cells_arr, counter) == FALSE) {
-			rand_row = rand();
-			rand_col = rand();
+			rand_row = rand() % n;
+			rand_col = rand() % n;
 		}
 		x_cells_arr[counter].row = rand_row;
 		x_cells_arr[counter].col = rand_col;
@@ -607,7 +597,6 @@ int remove_y_cells(Board *board, int y) {
 	int n = board->n;
 	int counter = 0;
 	int rand_row, rand_col;
-	srand(n); /* TODO - check if we supposed to insert a seed */
 
 	y_cells_arr = (Cell_Item *)malloc(y*sizeof(Cell_Item));
 	if (y_cells_arr == NULL){
@@ -619,8 +608,8 @@ int remove_y_cells(Board *board, int y) {
 		rand_row = rand() % n;
 		rand_col = rand() % n;
 		while (is_free_cell_position(rand_row, rand_col, y_cells_arr, counter) == FALSE) {
-			rand_row = rand();
-			rand_col = rand();
+			rand_row = rand() % n;
+			rand_col = rand() % n;
 		}
 		y_cells_arr[counter].row = rand_row;
 		y_cells_arr[counter].col = rand_col;
@@ -642,19 +631,18 @@ int remove_y_cells(Board *board, int y) {
 int play_generate(Game *game, Board *board, int x, int y){
 	Cell_Item *x_cells_arr = NULL;
 	int iter;
+	int elem_to_remove = board->n * board->n - y;
 
 	if (check_generate_valid(game, board, x, y) == NOT_VALID) {
 		return NOT_VALID;
 	}
 
-
-
 	for (iter = 0; iter < NUM_ITER_GENERATE; iter++) {
 		if ((fill_x_empty_cells(board, x) == VALID)) {
 		/*if ((fill_x_empty_cells(board, x) == VALID) &&*/
-			/*solve_board(board, RUN_GENERATE)) {*/
+			/*run_ILP(board, RUN_GENERATE)) {*/
 			/* generated full board */
-			remove_y_cells(board, y);
+			remove_y_cells(board, elem_to_remove);
 			print_board(board, game->mark_err);
 			free(x_cells_arr);
 			return VALID;
@@ -669,3 +657,28 @@ int play_generate(Game *game, Board *board, int x, int y){
 	return NOT_VALID;
 }
 
+int play_validate(Board *board) {
+	if (board->num_err != 0) {
+		print_errorneous_err();
+		return NOT_VALID;
+	}
+
+	/*if (run_ILP(board, RUN_VALIDATE) == NOT_VALID) {*/
+		/*print_validation_failed();*/
+		/*return NOT_VALID;*/
+	/*}*/
+	/*else{*/
+		/*print_validation_passed();*/
+		/*return VALID;*/
+	/*}*/
+	return VALID;
+}
+
+int free_game(Game *game) {
+	if (free_all_moves(game->curr_move) != VALID) {
+		return NOT_VALID;
+	}
+
+	free(game);
+	return VALID;
+}

@@ -55,16 +55,17 @@ void free_stack(Stack *stack) {
 }
 
 int insert_first_empty_cell(Board *board, int *row, int *col) {
-	int is_empty_cell = TRUE;
+	int is_empty_cell = FALSE;
 	int r, c;
 
 	for (r = 0; r < board->n; r++) {
 		for (c = 0; c < board->n; c++) {
-			if ((board->game_table[r][c].val == 0) &&
+			if ((board->game_table[r][c].val == UNASSIGNED) &&
 				       	(board->game_table[r][c].is_fixed == FALSE)) {
 				/* the cell is empty and can be change */
 				*row = r;
 				*col = c;
+				is_empty_cell = TRUE;
 				return is_empty_cell;
 			}
 		}
@@ -80,7 +81,7 @@ int mark_board_as_fixed(Board *board) {
 
 	for (r = 0; r < board->n; r++){
 		for (c = 0; c < board->n; c++) {
-			if (board->game_table[r][c].val != 0) {
+			if (board->game_table[r][c].val != UNASSIGNED) {
 				board->game_table[r][c].is_fixed = TRUE;
 			}
 		}
@@ -91,14 +92,12 @@ int mark_board_as_fixed(Board *board) {
 
 int push_possible_values_to_stack(Board *board, Stack *stack, int row, int col, int *how_many_added) {
 	int possible_val = 0;
-	int check_ret = NOT_VALID;
 
 	for (possible_val = 1; possible_val < board->n + 1; possible_val++) {
-		if (board->game_table[row][col].is_err == FALSE) {
+		if (is_cell_valid(board, board->game_table, possible_val, row, col)) {
 			/* added number as a possible number */
 			(*how_many_added) += 1;
-			check_ret = push(stack, row, col, possible_val);
-			if (check_ret == NOT_VALID) {
+			if (push(stack, row, col, possible_val) != VALID) {
 				return NOT_VALID;
 			}
 		}
@@ -116,7 +115,7 @@ int empty_all_next_cells(Board *board, Item *item) {
 		}
 	}
 
-	for (r = item->row; r < board->n; r++) {
+	for (r = item->row + 1; r < board->n; r++) {
 		for (c = item->col; c < board->n; c++) {
 			if (board->game_table[r][c].is_fixed == FALSE) {
 				board->game_table[r][c].val = UNASSIGNED;
@@ -151,15 +150,14 @@ int solve_by_backtracking(Board *board, Stack *stack, int *counter) {
 
 		is_empty_cell = insert_first_empty_cell(board, &row, &col);
 		if (!is_empty_cell) {
+			/* finish filling the board */
+			(*counter) += 1;
+		} else {
 			check_result = push_possible_values_to_stack(
 					board, stack, row, col, &how_many_added);
 			if (check_result == NOT_VALID) {
 				return NOT_VALID;
 			}
-		}
-		else {
-			/* finish filling the board */
-			(*counter) += 1;
 		}
 		free(item_to_insert);
 	}
@@ -172,8 +170,9 @@ int count_solutions(Board *board) {
 	int *sol_counter = NULL;
 	Board *board_to_fill;
 	Stack *stack;
+	int test = 0;
 
-	*sol_counter = 0;
+	sol_counter = &test;
 
 	board_to_fill = init_board(board->n, board->m_rows, board->m_cols, board->filled);
 	copy_board(board->game_table, board_to_fill->game_table, board->n);
@@ -181,7 +180,7 @@ int count_solutions(Board *board) {
 		return -1;
 	}
 
-	autofill(board_to_fill, FALSE);
+	board_to_fill = autofill(board_to_fill, FALSE);
 	stack = init_stack();
 
 	mark_board_as_fixed(board_to_fill);

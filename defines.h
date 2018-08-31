@@ -29,11 +29,6 @@ typedef struct _move_list {
 	struct _move_list *prev;
 } Move_l;
 
-typedef struct _dll {
-	/*int num_node;*/
-	Move_l *first;
-	Move_l *curr_move;
-} Dll;
 
 /******* board position structure *******/
 typedef struct _cell_item {
@@ -64,7 +59,6 @@ typedef struct _board {
 typedef struct _game_parameters {
 	Mode game_mode;
 	int mark_err;
-	Dll play_list;
 	Move_l *curr_move;
 } Game;
 
