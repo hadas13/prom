@@ -6,6 +6,12 @@
 #include "Solver.h"
 #include "GUI.h"
 #include "linked_list.h"
+#include "MainAux.h"
+#include "Backtracking.h"
+
+#define NUM_ITER_GENERATE 1000 /* iterations num of generating x numbers in generate command */
+#define NOT_POSSIBLE_VAL -1
+
 
 /*
  * Function that receives a struct containing the board game and its dimensions
@@ -19,7 +25,34 @@ void print_frame(Board *board);
  * and handles the different commands types according to the instructions
  */
 
-void turn(struct Command command, Board *board, Game *game);
+
+/*void turn(struct Command command, Board *board, Game *game);*/
+
+
+/* 
+ * allocate two dim array in board->game_table and filled it with fixed numbers.
+ * @param board: game board. insert to board->game_table.
+ * @return value: failed allocate - NOT_VALID, else - VALID. 
+ */
+int init_game_table(Board *board);
+
+
+/*
+ * init board struct and game board.
+ * @param n: number of cells in row and column.
+ * @param m_cols: cells number in block's column.
+ * @param m_rows: cells number in block's row.
+ * @param fixed_nums: number of fixed cells.
+ * @return value: new game board and solution. 
+ */
+Board *init_board(int n, int m_rows, int m_cols, int fixed_nums);
+
+
+Game *init_game();
+
+/*
+ * Function that changes the is_mark in game sturct */
+int play_mark_errors(Game *game, int is_mark);
 
 /*
  * Function that receives a Board structure and returns 1 if the player either asked to restart
@@ -62,4 +95,13 @@ void print_board(Board *board, int print_err);
 
 int update_errors_on_board(Board *board);
 
+Board *autofill(Board *board, int to_print);
+
+int play_save(Board *board, Game *game, char *path);
+
+int play_num_solutions(Board *board);
+
+int play_generate(Game *game, Board *board, int x, int y);
+
+int free_game(Game *game);
 #endif /* GAME_H_ */

@@ -1,5 +1,5 @@
 CC = gcc
-OBJS = Game.o linked_list.o Parser.o Solver.o MainAux.o GUI.o main.o
+OBJS = Game.o linked_list.o Backtracking.o Parser.o Solver.o MainAux.o GUI.o main.o
 EXEC = sudoku
 COMP_FLAG = -ansi -Wall -Wextra \
 -Werror -pedantic-errors -g
@@ -19,6 +19,8 @@ GUI.o: GUI.c GUI.h
 Solver.o: Solver.c Solver.h
 	$(CC) $(COMP_FLAG) -c $*.c
 linked_list.o: linked_list.c linked_list.h
+	$(CC) $(COMP_FLAG) -c $*.c
+Backtracking.o: Backtracking.c Backtracking.h
 	$(CC) $(COMP_FLAG) -c $*.c
 clean:
 	rm -f $(OBJS) $(EXEC)

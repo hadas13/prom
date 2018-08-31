@@ -9,6 +9,10 @@
 #define NOT_VALID  0
 #define UNASSIGNED 0
 
+#define RUN_VALIDATE 1
+#define RUN_GENERATE 2
+#define RUN_HINT     3
+
 /***** moves linked-list structures *******/
 typedef struct _move_node {
 	int row;
@@ -25,11 +29,14 @@ typedef struct _move_list {
 	struct _move_list *prev;
 } Move_l;
 
-typedef struct _dll {
-	/*int num_node;*/
-	Move_l *first;
-	Move_l *curr_move;
-} Dll;
+
+/******* board position structure *******/
+typedef struct _cell_item {
+	int row;
+	int col;
+	int val;
+} Cell_Item;
+
 
 typedef enum _mode{INIT, EDIT, SOLVE} Mode; 
 
@@ -42,7 +49,6 @@ typedef struct _cell {
 
 typedef struct _board {
 	Cell **game_table;
-	Cell **solution;
 	int n;
 	int m_rows;
 	int m_cols;
@@ -53,8 +59,7 @@ typedef struct _board {
 typedef struct _game_parameters {
 	Mode game_mode;
 	int mark_err;
-	Dll play_list;
 	Move_l *curr_move;
 } Game;
-	
+
 #endif

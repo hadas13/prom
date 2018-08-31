@@ -71,6 +71,6 @@ struct Command get_command();
  * that requires additional arguments and updates them accordingly
  */
 
-void get_args(struct Command, char *tokens);
+void get_args(struct Command *command, char *tokens);
 
 #endif /* PARSER_H_ */

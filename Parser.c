@@ -47,20 +47,6 @@
 #define RESET 15
 #define GENERATE 16
 
-/*
- * structure to represent a command
- */
-
-struct Command{
-	int command; /* command type */
-	/* command arguments */
-	int X;
-	int Y;
-	int Z;
-	char path[256];
-	int valid; /* indication if command is valid according to type and number of arguments needed */
-};
-
 void get_args(struct Command *command, char *tokens){
 	/* get numeric args for mark_errors, set, generate and hint commands */
 	if (command->command == MARK_ERRORS || command->command == SET || command->command == GENERATE || command->command == HINT){

@@ -7,17 +7,12 @@
 #define ERROR -1
 #define VALID 1 
 
-#define CONTAINS_ERRORNEOUS_ERR "Error: board contains errorneous values\n"
-#define CELL_FIXED_ERR		"Error: cell is fixed\n"
-#define UNSOLVABLE_ERR		"Error: board is unsolvable\n"
-
-
 /*********** functions ***********/
 int print_errorneous_err();
 
 int print_cell_fixed_err();
 
-int print_unsolvable_err();
+int print_err_unsolvable();
 
 int print_num_of_solutions(int num);
 
@@ -39,6 +34,8 @@ int print_err_value_not_in_range();
 
 int print_err_cell_is_fixed();
 
+int print_err_invalid_command();
+
 int print_err_row_col_not_in_range();
 
 int print_err_board_contains_error();
@@ -53,4 +50,27 @@ int print_err_no_moves_to_redo();
 
 int print_redo_move(Move_l *curr_move);
 
+int print_number_of_solutions(int num_sol);
+
+int print_notify_one_solution();
+
+int print_notify_more_solutions();
+
+int print_err_cant_created_or_modified();
+
+int print_err_board_validate_failed();
+
+int print_save_file_to();
+
+int print_err_value_not_int_range_E(int e);
+
+int print_err_board_not_empty();
+
+int print_err_generator_failed();
+
+int print_hint(int clue);
+
+int print_validation_failed();
+
+int print_validation_passed();
 #endif /* GAME_H_ */

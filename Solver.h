@@ -47,23 +47,7 @@ int free_matrix(Cell **mat, int n);
  * @param board: the game struct to free.
  * @return value: after freeing - returns VALID.
  */
-int clean_up(Board *board);
-
-
-/*
- * randomly choosing #board->filled cells and insert it to game_table. 
- * @param board: game board.
- * @return value: only VALID.
- */
-int insert_fixed_cell(Board *board);
-
-
-/* 
- * allocate two dim array in board->game_table and filled it with fixed numbers.
- * @param board: game board. insert to board->game_table.
- * @return value: failed allocate - NOT_VALID, else - VALID. 
- */
-int init_game_table(Board *board);
+int free_board(Board *board);
 
 
 /* 
@@ -175,24 +159,6 @@ int get_random_option(int *num_arr, int n);
  * @return value: valid.
  */
 int update_num_arr(int *num_arr, int n, int next_num);
-
-
-/*
- * @param board: game board.
- * @return value: inserted board->solution, and returns VALID, else - NOT_VALID. 
- */
-int init_solution_board(Board *board);
-
-
-/*
- * init board struct and game board.
- * @param n: number of cells in row and column.
- * @param m_cols: cells number in block's column.
- * @param m_rows: cells number in block's row.
- * @param fixed_nums: number of fixed cells.
- * @return value: new game board and solution. 
- */
-Board *init_board(int n, int m_rows, int m_cols, int fixed_nums);
 
 
 /* 

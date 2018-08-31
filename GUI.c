@@ -3,17 +3,17 @@
 
 
 int print_errorneous_err(){
-	printf(CONTAINS_ERRORNEOUS_ERR);
+	printf("Error: board contains errorneous values\n");
 	return VALID;
 }
 
 int print_cell_fixed_err(){
-	printf(CELL_FIXED_ERR);
+	printf("Error: cell is fixed\n");
 	return VALID;
 }
 
-int print_unsolvable_err(){
-	printf(UNSOLVABLE_ERR);
+int print_err_unsolvable(){
+	printf("Error: board is unsolvable\n");
 	return VALID;
 }
 
@@ -90,14 +90,12 @@ void print_board(Board *board, int mark_err){
 	int m_r = board->m_rows; /* num of cells in a row of block */
 	int i = 0;
 	int j = 0;
-	Cell cell;
 
 	print_frame(board); /* print the top frame line */
 	for (i = 0; i < n; i++){
 		printf("|"); /* start a block */
 		for (j = 0; j < n;j++){
-			cell = board->game_table[i][j];
-			print_cell(cell, mark_err);
+			print_cell(board->game_table[i][j], mark_err);
 			if ((j+1) % m_c == 0){ /* frame of block */
 				printf(" |");
 			}
@@ -121,6 +119,11 @@ int print_err_is_mark_val() {
 
 int print_err_cell_is_fixed() {
 	printf("Error: cell is fixed\n");
+	return VALID;
+}
+
+int print_err_invalid_command() {
+	printf("Error: invalid command\n");
 	return VALID;
 }
 
@@ -181,11 +184,11 @@ int print_redo_move(Move_l *curr_move) {
 			       	change->val_before);
 		}
 		else if (change->val_before == 0) {
-			printf("Undo %d,%d: from _ to %d\n", change->row, change->col,
+			printf("Redo %d,%d: from _ to %d\n", change->row, change->col,
 			       	change->val_after);
 		}
 		else {
-			printf("Undo %d,%d: from %d to %d\n", change->row, change->col,
+			printf("Redo %d,%d: from %d to %d\n", change->row, change->col,
 					change->val_before, change->val_after);
 		}
 		change = change->next;
@@ -193,3 +196,57 @@ int print_redo_move(Move_l *curr_move) {
 	return VALID;
 }
 
+int print_number_of_solutions(int num_sol) {
+	printf("Number of solutions: %d\n", num_sol);
+	return VALID;
+}
+
+int print_notify_one_solution() {
+	printf("This is a good board!\n");
+	return VALID;
+}
+
+int print_notify_more_solutions() {
+	printf("The puzzle has more that 1 solution, try to edit it further\n");
+	return VALID;
+}
+
+int print_err_cant_created_or_modified() {
+	printf("Error: File cannot be created or modified\n");
+	return VALID;
+}
+
+int print_save_file_to(char *path) {
+	printf("Saved to: %s\n", path);
+	return VALID;
+}
+
+int print_err_value_not_int_range_E(int e) {
+	printf("Error: value not in range 0-%d\n", e);
+	return VALID;
+}
+
+int print_err_board_not_empty() {
+	printf("Error: board is not empty\n");
+	return VALID;
+}
+
+int print_err_generator_failed() {
+	printf("Error: puzzle generator failed\n");
+	return VALID;
+}
+
+int print_hint(int clue) {
+	printf("Hint: set cell to %d\n", clue);
+	return VALID;
+}
+
+int print_validation_failed() {
+	printf("Validation failed: board is unsolvable\n");
+	return VALID;
+}
+
+int print_validation_passed() {
+	printf("Validation passed: board is solvable\n");
+	return VALID;
+}
