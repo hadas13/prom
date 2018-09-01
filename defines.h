@@ -9,9 +9,9 @@
 #define NOT_VALID  0
 #define UNASSIGNED 0
 
-#define RUN_VALIDATE 1
-#define RUN_GENERATE 2
-#define RUN_HINT     3
+#define RUN_VALIDATE 2
+#define RUN_GENERATE 3
+#define RUN_HINT     1
 
 /***** moves linked-list structures *******/
 typedef struct _move_node {
