@@ -49,6 +49,11 @@ int print_board_contains_error() {
 	printf("Error: board contains errorneous values\n");
 	return VALID;
 }
+/* TODO need to check what to print here, I just added it for compilation */
+int print_err_board_validate_failed(){
+	printf("Error: board validation failed\n");
+	return VALID;
+}
 
 void print_frame(Board *board){
 	/* prints "-" according to number of cells in block */
