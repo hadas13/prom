@@ -102,7 +102,7 @@ int run_ILP(Board *board, int command_index, int row, int col){
 			}
 			error = GRBaddconstr(model, dim, ind, val, GRB_EQUAL, 1.0, NULL);
 			if (error){
-				printf("error in adding Gurobi's constraint\n");
+				printf("error in adding Gurobi's value constraint\n");
 				goto ERROR;
 			}
 		}
@@ -117,7 +117,7 @@ int run_ILP(Board *board, int command_index, int row, int col){
 			}
 			error = GRBaddconstr(model, dim, ind, val, GRB_EQUAL, 1.0, NULL);
 			if (error){
-				printf("error in adding Gurobi's constraint\n");
+				printf("error in adding Gurobi's row constraint\n");
 				goto ERROR;
 			}
 		}
@@ -132,7 +132,7 @@ int run_ILP(Board *board, int command_index, int row, int col){
 			}
 			error = GRBaddconstr(model, dim, ind, val, GRB_EQUAL, 1.0, NULL);
 			if (error){
-				printf("error in adding Gurobi's constraint\n");
+				printf("error in adding Gurobi's column constraint\n");
 				goto ERROR;
 			}
 		}
@@ -140,8 +140,8 @@ int run_ILP(Board *board, int command_index, int row, int col){
 
 	/* constraint - each sub block has all the values */
 	for (z = 0; z < dim; z++){
-		for (x_sub = 0; x_sub < sub_dim_rows; x_sub++){
-			for (y_sub = 0; y_sub < sub_dim_cols; y_sub++){
+		for (x_sub = 0; x_sub < sub_dim_cols; x_sub++){
+			for (y_sub = 0; y_sub < sub_dim_rows; y_sub++){
 				count = 0;
 				for (x = x_sub * sub_dim_rows; x < (x_sub + 1) * sub_dim_rows; x++){
 					for (y = y_sub * sub_dim_cols; y < (y_sub + 1) * sub_dim_cols; y++){
@@ -152,7 +152,7 @@ int run_ILP(Board *board, int command_index, int row, int col){
 				}
 				error = GRBaddconstr(model, dim, ind, val, GRB_EQUAL, 1.0, NULL);
 				if (error){
-					printf("error in adding Gurobi's constraint\n");
+					printf("error in adding Gurobi's sub block constraint\n");
 					goto ERROR;
 				}
 			}
