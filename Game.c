@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "Game.h"
+#include "ILP.h"
 
 Cell init_cell() {
 	Cell init_cell;
@@ -217,7 +218,6 @@ int play_hint(struct Command command, Board *board){
 	int X = command.X;
 	int Y = command.Y;
 	int clue = 0;
-	/*int row, col;*/
 
 	if (!is_row_col_param_valid(board->n, X, Y)) {
 		print_err_row_col_not_in_range();
@@ -239,9 +239,7 @@ int play_hint(struct Command command, Board *board){
 		return NOT_VALID;
 	}
 
-	/*row = Y - 1;*/
-	/*col = X - 1;*/
-	/*clue = run_ILP(board, RUN_HINT, row, col);*/
+	clue = run_ILP(board, RUN_HINT, command.Y, command.X);
 	
 	if (clue == NOT_VALID) {
 		print_err_unsolvable();
@@ -435,11 +433,10 @@ int play_save(Board *board, Game *game, char *path) {
 			print_board_contains_error();
 			return NOT_VALID;
 		}
-		/* TODO - check it with omer */
-		/*if (run_ILP(board, RUN_VALIDATE) != VALID) {*/
-                               /*print_err_board_validate_failed();*/
-			/*return NOT_VALID;*/
-		/*}*/
+		if (run_ILP(board, RUN_VALIDATE, 0, 0) != VALID) {
+			print_err_board_validate_failed();
+			return NOT_VALID;
+		}
 	}
 
 	fd = fopen(path, "w");
@@ -638,9 +635,7 @@ int play_generate(Game *game, Board *board, int x, int y){
 	}
 
 	for (iter = 0; iter < NUM_ITER_GENERATE; iter++) {
-		if ((fill_x_empty_cells(board, x) == VALID)) {
-		/*if ((fill_x_empty_cells(board, x) == VALID) &&*/
-			/*run_ILP(board, RUN_GENERATE)) {*/
+		if ((fill_x_empty_cells(board, x) == VALID) && run_ILP(board, RUN_GENERATE, 0, 0)) {
 			/* generated full board */
 			remove_y_cells(board, elem_to_remove);
 			print_board(board, game->mark_err);
@@ -663,14 +658,14 @@ int play_validate(Board *board) {
 		return NOT_VALID;
 	}
 
-	/*if (run_ILP(board, RUN_VALIDATE) == NOT_VALID) {*/
-		/*print_validation_failed();*/
-		/*return NOT_VALID;*/
-	/*}*/
-	/*else{*/
-		/*print_validation_passed();*/
-		/*return VALID;*/
-	/*}*/
+	if (run_ILP(board, RUN_VALIDATE, 0, 0) == NOT_VALID) {
+		print_validation_failed();
+		return NOT_VALID;
+	}
+	else{
+		print_validation_passed();
+		return VALID;
+	}
 	return VALID;
 }
 
