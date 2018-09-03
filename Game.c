@@ -1,6 +1,8 @@
 #include <stdio.h>
+#include <string.h>
 #include "Game.h"
 #include "ILP.h"
+#include "MainAux.h"
 
 Cell init_cell() {
 	Cell init_cell;
@@ -675,5 +677,132 @@ int free_game(Game *game) {
 	}
 
 	free(game);
+	return VALID;
+}
+
+int read_sudoku(char *path, Board *board){
+	int row, col, n, count;
+	FILE *input;
+	char read[2] = {'\0', '\0'};
+
+	input = fopen(path, "r+");
+	if (input == NULL){
+		printf("problem with file\n");
+		return NOT_VALID;
+	}
+
+	free_matrix(board->game_table, board->n); /* free the current game table */
+
+	/* go over spaces until we find dimensions of sub block */
+	while (isspace(read[0] = fgetc(input))){}
+	row = string_to_int(read);
+	printf("updated row from file\n");
+	while (isspace(read[0] = fgetc(input))){}
+	col = string_to_int(read);
+	n = col * row;
+
+	/* update current board with new dimensions and create new empty game table */
+	board->m_rows = row;
+	board->m_cols = col;
+	board->n = n;
+	init_game_table(board);
+
+	/* iterate on the file to update the new board */
+	count = 0;
+	row = 0;
+	while(row < n){ /* go over rows */
+		col = 0;
+		while(col < n){ /* go over columns */
+			board->game_table[row][col].is_err = 0;
+			if(!isspace(read[0] = fgetc(input))){ /* found a value or a dot */
+				if (read[0] != '.'){ /* found a value or first digit of the value of a cell */
+					board->game_table[row][col].val = string_to_int(read);
+					if (board->game_table[row][col].val != 0){ /* increment filled cells */
+						count += 1;
+					}
+					if (isspace(read[0] = fgetc(input))){ /* unfixed value */
+						board->game_table[row][col].is_fixed = 0;
+						col += 1;
+					}
+					else if (read[0] != '.'){ /* double digit value in the cell */
+						board->game_table[row][col].val *= 10;
+						board->game_table[row][col].val += string_to_int(read);
+						if (isspace(read[0] = fgetc(input))){ /* unfixed value of double digit */
+							board->game_table[row][col].is_fixed = 0;
+							col += 1;
+						}
+						else{ /* fixed double digit value */
+							board->game_table[row][col].is_fixed = 1;
+							col += 1;
+						}
+					}
+					else{ /* a dot of a fixed cell */
+						board->game_table[row][col].is_fixed = 1;
+						col += 1;
+					}
+				}
+				else{ /* a fixed cell */
+					board->game_table[row][col].is_fixed = 1;
+					col += 1;
+				}
+			}
+		}
+		row += 1;
+	}
+
+	board->filled = count; /* updating the number of filled cells */
+	fclose(input);
+	return VALID;
+}
+
+int play_solve(Board *board, char *path, Game *game){
+	if (read_sudoku(path, board) == NOT_VALID){ /* trouble opening the file */
+		printf("Error: File doesn't exist or cannot be opened\n");
+		return NOT_VALID;
+	}
+
+	free_all_moves(game->curr_move); /* clear the linked list */
+	game->game_mode = SOLVE;
+	return VALID;
+}
+
+int play_edit(Board *board, char *path, Game *game){
+	int col, row, n;
+
+	if (path != NULL){ /* path wasn't provided */
+		free_matrix(board->game_table, board->n); /* clean old board */
+		board->m_cols = 3;
+		board->m_rows = 3;
+		board->n = 9;
+		board->filled = 0;
+		board->num_err = 0;
+		init_game_table(board); /* create new empty board */
+		n = board->n;
+		for (row = 0; row < n; row++){
+			for (col = 0; col < n; col++){
+				board->game_table[row][col].val = 0;
+				board->game_table[row][col].is_fixed = 0;
+				board->game_table[row][col].is_err = 0;
+			}
+		}
+		free_all_moves(game->curr_move); /* clear the linked list */
+		game->game_mode = EDIT;
+		return VALID;
+	}
+	else if(read_sudoku(path, board) == NOT_VALID){ /* reading the file failed */
+		printf("Error: File cannot be opened\n");
+		return NOT_VALID;
+	}
+	else{ /* sudoku updated from file */
+		free_all_moves(game->curr_move); /* clear the linked list */
+		game->game_mode = EDIT;
+		return VALID;
+	}
+}
+
+int play_exit(Board *board, Game *game){
+	free_game(game);
+	free_board(board);
+	printf("Exiting...\n");
 	return VALID;
 }
