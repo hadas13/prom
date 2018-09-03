@@ -696,7 +696,6 @@ int read_sudoku(char *path, Board *board){
 	/* go over spaces until we find dimensions of sub block */
 	while (isspace(read[0] = fgetc(input))){}
 	row = string_to_int(read);
-	printf("updated row from file\n");
 	while (isspace(read[0] = fgetc(input))){}
 	col = string_to_int(read);
 	n = col * row;
