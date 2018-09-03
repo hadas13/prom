@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "ILP.h"
 #include "MainAux.h"
+#include "Parser.h"
 
 Cell init_cell() {
 	Cell init_cell;
@@ -804,4 +805,156 @@ int play_exit(Board *board, Game *game){
 	free_board(board);
 	printf("Exiting...\n");
 	return VALID;
+}
+
+void play(){
+	Game *game;
+	Board *board;
+	struct Command command;
+	int m_rows, m_cols, n, fixed, errors = 0;
+
+	game = init_game();
+	board = init_board(n, m_rows, m_cols, fixed); /* TODO check what to do with num of error cells */
+
+	printf("Sudoku\n");
+	printf("------\n");
+
+	while (TRUE){ /* keep playing */
+		printf("Enter your command:\n");
+		command = get_command();
+		if (command.valid == 0){ /* invalid command */
+			printf("Error: invalid command\n");
+		}
+		else if(game->game_mode == INIT){ /* init mode */
+			switch (command.command){
+			case SOLVE:
+				play_solve(board, command.path, game);
+				command.path = NULL;
+				break;
+			case EDIT:
+				play_edit(board, command.path, game);
+				command.path = NULL;
+				break;
+			case EXIT:
+				play_exit();
+				return;
+			default:
+				printf("Error: invalid command\n");
+				break;
+			}
+		}
+		else if(game->game_mode == SOLVE){ /* solve mode */
+			switch (command.command){
+				case SOLVE:
+					play_solve(board, command.path, game);
+					command.path = NULL;
+					break;
+				case EDIT:
+					play_edit(board, command.path, game);
+					command.path = NULL;
+					break;
+				case EXIT:
+					play_exit();
+					return;
+				case MARK_ERRORS:
+					play_mark_errors(game, command.X);
+					break;
+				case PRINT_BOARD:
+					print_board(board, game->mark_err);
+					break;
+				case SET:
+					play_set(command, board, game);
+					print_board(board, game->mark_err);
+					if (board->filled == board->n * board->n){ /* board is full */
+						if(play_validate(board)){
+							/* validation passed */
+							printf("Puzzle solved successfully\n");
+							game->game_mode = INIT;
+						}
+						else{ /* validation failed */
+							printf("Puzzle solution erroneous\n");
+						}
+					}
+					break;
+				case VALIDATE:
+					play_validate(board);
+					break;
+				case UNDO:
+					play_undo(); /* TODO needs to be written */
+					break;
+				case REDO:
+					play_redo(); /* TODO needs to be written */
+					break;
+				case SAVE:
+					play_save(board, game, command.path);
+					command.path = NULL;
+					break;
+				case HINT:
+					play_hint(command, board);
+					break;
+				case NUM_SOLUTIONS:
+					play_num_solutions();
+					break;
+				case AUTOFILL: /* TODO check what about this part */
+					autofill();
+					break;
+				case RESET: /* TODO check what about this part */
+					play_reset();
+					break;
+				default:
+					printf("Error: invalid command\n");
+					break;
+			}
+		}
+		else{ /* edit mode */
+			switch (command.command){
+				case SOLVE:
+					play_solve(board, command.path, game);
+					command.path = NULL;
+					break;
+				case EDIT:
+					play_edit(board, command.path, game);
+					command.path = NULL;
+					break;
+				case EXIT:
+					play_exit();
+					return;
+				case PRINT_BOARD:
+					print_board(board, 1); /* TODO check if 1 indicates to mark errors or not */
+					break;
+				case SET:
+					play_set(command, board, game);
+					print_board(board, 1);
+					break;
+				case GENERATE:
+					play_generate(game, board, command.X, command.Y);
+					break;
+				case VALIDATE:
+					play_validate(board);
+					break;
+				case UNDO:
+					play_undo(); /* TODO needs to be written */
+					break;
+				case REDO:
+					play_redo(); /* TODO needs to be written */
+					break;
+				case SAVE:
+					play_save(board, game, command.path);
+					command.path = NULL;
+					break;
+				case NUM_SOLUTIONS:
+					play_num_solutions();
+					break;
+				case RESET: /* TODO check what about this part */
+					play_reset();
+					break;
+				default:
+					printf("Error: invalid command\n");
+					break;
+			}
+		}
+	}
+
+	free_board(board);
+	free_game(game);
 }
