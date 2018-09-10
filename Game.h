@@ -59,7 +59,7 @@ int play_mark_errors(Game *game, int is_mark);
  * or asked to exit, and 0 if the current games needs to continue
  */
 
-int stop_game(Board *board);
+int stop_game(Board *board); /* TODO delete */
 
 /*
  * Function that manages playing the game

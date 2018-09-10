@@ -20,5 +20,11 @@ int is_numeric_string(char *string);
 
 int clean_vals_from_board(Board *board);
 
+/*
+ * receives a string and sets it's values to \0
+ */
+void clear_path(char *path);
+
+
 
 #endif /* MAINAUX_H_ */

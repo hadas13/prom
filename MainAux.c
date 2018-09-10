@@ -58,3 +58,10 @@ int clean_vals_from_board(Board *board) {
 	return VALID;
 }
 
+void clear_path(char *path){
+	int i = 0;
+	for (; i < 256; i++){
+		path[i] = '\0';
+	}
+}
+

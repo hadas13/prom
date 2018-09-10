@@ -769,7 +769,7 @@ int play_solve(Board *board, char *path, Game *game){
 int play_edit(Board *board, char *path, Game *game){
 	int col, row, n;
 
-	if (path != NULL){ /* path wasn't provided */
+	if (path == NULL){ /* path wasn't provided */
 		free_matrix(board->game_table, board->n); /* clean old board */
 		board->m_cols = 3;
 		board->m_rows = 3;
@@ -810,11 +810,11 @@ int play_exit(Board *board, Game *game){
 void play(){
 	Game *game;
 	Board *board;
+	Board *temp_board;
 	struct Command command;
-	int m_rows, m_cols, n, fixed, errors = 0;
 
 	game = init_game();
-	board = init_board(n, m_rows, m_cols, fixed); /* TODO check what to do with num of error cells */
+	board = init_board(9, 3, 3, 0); /* initialize a generic board */
 
 	printf("Sudoku\n");
 	printf("------\n");
@@ -829,14 +829,14 @@ void play(){
 			switch (command.command){
 			case SOLVE:
 				play_solve(board, command.path, game);
-				command.path = NULL;
+				clear_path(command.path);
 				break;
 			case EDIT:
 				play_edit(board, command.path, game);
-				command.path = NULL;
+				clear_path(command.path);
 				break;
 			case EXIT:
-				play_exit();
+				play_exit(board, game);
 				return;
 			default:
 				printf("Error: invalid command\n");
@@ -847,14 +847,14 @@ void play(){
 			switch (command.command){
 				case SOLVE:
 					play_solve(board, command.path, game);
-					command.path = NULL;
+					clear_path(command.path);
 					break;
 				case EDIT:
 					play_edit(board, command.path, game);
-					command.path = NULL;
+					clear_path(command.path);
 					break;
 				case EXIT:
-					play_exit();
+					play_exit(board, game);
 					return;
 				case MARK_ERRORS:
 					play_mark_errors(game, command.X);
@@ -880,26 +880,33 @@ void play(){
 					play_validate(board);
 					break;
 				case UNDO:
-					play_undo(); /* TODO needs to be written */
+					printf("play undo\n"); /* TODO needs to be written */
 					break;
 				case REDO:
-					play_redo(); /* TODO needs to be written */
+					printf("play redo\n"); /* TODO needs to be written */
 					break;
 				case SAVE:
 					play_save(board, game, command.path);
-					command.path = NULL;
+					clear_path(command.path);
 					break;
 				case HINT:
 					play_hint(command, board);
 					break;
 				case NUM_SOLUTIONS:
-					play_num_solutions();
+					play_num_solutions(board);
 					break;
-				case AUTOFILL: /* TODO check what about this part */
-					autofill();
+				case AUTOFILL:
+					temp_board = autofill(board, 1);
+					if (temp_board == 0){ /* function didn't work */
+						temp_board = NULL;
+					}
+					else{
+						board = temp_board;
+						print_board(board, game->mark_err);
+					}
 					break;
 				case RESET: /* TODO check what about this part */
-					play_reset();
+					printf("play reset\n");
 					break;
 				default:
 					printf("Error: invalid command\n");
@@ -910,14 +917,14 @@ void play(){
 			switch (command.command){
 				case SOLVE:
 					play_solve(board, command.path, game);
-					command.path = NULL;
+					clear_path(command.path);
 					break;
 				case EDIT:
 					play_edit(board, command.path, game);
-					command.path = NULL;
+					clear_path(command.path);
 					break;
 				case EXIT:
-					play_exit();
+					play_exit(board, game);
 					return;
 				case PRINT_BOARD:
 					print_board(board, 1); /* TODO check if 1 indicates to mark errors or not */
@@ -933,20 +940,20 @@ void play(){
 					play_validate(board);
 					break;
 				case UNDO:
-					play_undo(); /* TODO needs to be written */
+					printf("play undo\n"); /* TODO needs to be written */
 					break;
 				case REDO:
-					play_redo(); /* TODO needs to be written */
+					printf("play redo\n"); /* TODO needs to be written */
 					break;
 				case SAVE:
 					play_save(board, game, command.path);
-					command.path = NULL;
+					clear_path(command.path);
 					break;
 				case NUM_SOLUTIONS:
-					play_num_solutions();
+					play_num_solutions(board);
 					break;
 				case RESET: /* TODO check what about this part */
-					play_reset();
+					printf("play reset\n");
 					break;
 				default:
 					printf("Error: invalid command\n");
