@@ -1,44 +1,43 @@
 #ifndef DEFINES_H_
 #define DEFINES_H_
 
-/*#include "linked_list.h"*/
+#define TRUE              1
+#define FALSE             0
+#define VALID             1
+#define NOT_VALID         0
+#define UNASSIGNED        0
 
-#define TRUE       1
-#define FALSE      0
-#define VALID      1
-#define NOT_VALID  0
-#define UNASSIGNED 0
-
-#define RUN_VALIDATE 2
-#define RUN_GENERATE 3
-#define RUN_HINT     1
+#define RUN_VALIDATE 1
+#define RUN_GENERATE 2
+#define RUN_HINT     3
 
 /***** moves linked-list structures *******/
-typedef struct _move_node {
+
+typedef struct move_action_t {
 	int row;
 	int col;
 	int val_before;
+	int is_err_before;
 	int val_after;
-	struct _move_node *next;
-} Changes_n;
+	int is_err_after;
+	void *subchain;
+} MoveInfo;
 
-typedef struct _move_list {
-	int num_changes;
-	Changes_n *first_change;
-	struct _move_list *next;
-	struct _move_list *prev;
-} Move_l;
+typedef struct _game_moves_list_t {
+	MoveInfo move;
+	struct _game_moves_list_t *next;
+	struct _game_moves_list_t *prev;
+} MoveList;
 
 
-/******* board position structure *******/
+
 typedef struct _cell_item {
 	int row;
 	int col;
 	int val;
 } Cell_Item;
 
-
-typedef enum _mode{INIT, EDIT, SOLVE} Mode; 
+typedef enum _mode{INIT_MODE = 0, EDIT_MODE = 1, SOLVE_MODE = 2, EXIT_MODE = 3, ERROR_EXIT_MODE = 4} Mode; 
 
 /***** game structures *******/
 typedef struct _cell {
@@ -59,7 +58,8 @@ typedef struct _board {
 typedef struct _game_parameters {
 	Mode game_mode;
 	int mark_err;
-	Move_l *curr_move;
+	MoveList *curr_move;
 } Game;
+
 
 #endif

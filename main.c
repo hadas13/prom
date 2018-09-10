@@ -5,49 +5,52 @@
 #include "Game.h"
 #include "MainAux.h"
 #include "Parser.h"
+#include "Moves.h"
 
-/*int main(int argc, char **argv){*/
-	/*int seed;*/
-	
-	/*SP_BUFF_SET();*/
-	/*if (argc != 2) {*/
-		/*[> didn't insert seed <]*/
-		/*seed = 5;*/
-	/*}*/
-	/*else {*/
-		/*seed = string_to_int(argv[argc-1]); [> get the seed int value <]*/
-	/*}*/
-	/*srand(seed);*/
-	/*play();*/
-	/*return(0);*/
-/*}*/
 
 int main() {
+	MoveList initial_move;
 	Board *board;
-	Game *game;
-	struct Command cmd;
+	Game game;
+	struct Command cmd1, cmd2;
 	int n = 4;
 	int m_rows = 2;
 	int m_cols = 2;
-	cmd.X = 1;
-	cmd.Y = 1;
-	cmd.Z = 3;
+	cmd1.X = 1;
+	cmd1.Y = 1;
+	cmd1.Z = 3;
+	cmd2.X = 2;
+	cmd2.Y = 2;
+	cmd2.Z = 2;
+
 	board = init_board(n, m_rows, m_cols, 0);
-	game = init_game();
-	game->game_mode = EDIT;
+	/* from here needs to be in main */
+	game.game_mode = INIT_MODE;
+	game.mark_err = TRUE;
+	init_empty_game_move_info(&(initial_move.move));
+	initial_move.next = NULL;
+	initial_move.prev = NULL;
+	game.curr_move = &initial_move;
+	/*until here */
+	/*game.game_mode = EDIT_MODE;*/
 	/*play_generate(game,  board, 10, 6);*/
-	play_set(cmd, board, game);
-	/*undo(game->curr_move, board, game);*/
+	play_set(cmd1, board, &game);
+	play_set(cmd2, board, &game);
+	play_undo(board, &game); 
+	play_redo(board, &game); 
 
-	play_set(cmd, board, game);
-	print_board(board, TRUE);
-	/*board = autofill(board, TRUE);*/
+	board->game_table[2][2].val = 1;
+	board->game_table[3][3].val = 4;
+	board->game_table[2][3].val = 2;
+	printf("here\n");
+	play_autofill(&board, &game, TRUE);
+	printf("this is filled: %d\n", board->filled);
 	play_num_solutions(board);
+	play_undo(board, &game); 
+	play_redo(board, &game); 
+	play_redo(board, &game); 
 
-	play_save(board, game, "here.txt");
-
-	print_board(board, TRUE);
 	free_board(board);
-	free_game(game);
+	free_game(&game);
 	return 1;
 }
