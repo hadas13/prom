@@ -180,7 +180,6 @@ int count_solutions(Board *board) {
 		return -1;
 	}
 
-	/*board_to_fill = autofill(board_to_fill, FALSE);*/
 	stack = init_stack();
 
 	mark_board_as_fixed(board_to_fill);

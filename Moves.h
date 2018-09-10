@@ -28,7 +28,7 @@ int create_new_move(Board *board, MoveInfo *new_move, int row, int column, int v
 int append_new_move_to_moves_list(MoveList *curr_move, MoveInfo new_move);
 
 /* create chain of moves that connected to generate move */
-int create_generate_chain(Board *game_board, Board *generate_board, MoveInfo move);
+/*int create_generate_chain(Board *game_board, Board *generate_board, MoveInfo move);*/
 
 /*
  * @param **chain: the main chain of moves that going to be hold all the changes that

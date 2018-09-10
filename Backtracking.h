@@ -3,6 +3,8 @@
 
 #include "Game.h"
 #include "Solver.h"
+#include "defines.h"
+#include "Solver.h"
 
 /******* stack structure ***********/
 
