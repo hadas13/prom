@@ -56,7 +56,7 @@ void free_stack(Stack *stack) {
 
 int insert_first_empty_cell(Board *board, int *row, int *col) {
 	int is_empty_cell = FALSE;
-	int r, c;
+	int r = 0, c = 0;
 
 	for (r = 0; r < board->n; r++) {
 		for (c = 0; c < board->n; c++) {
@@ -180,7 +180,7 @@ int count_solutions(Board *board) {
 		return -1;
 	}
 
-	board_to_fill = autofill(board_to_fill, FALSE);
+	/*board_to_fill = autofill(board_to_fill, FALSE);*/
 	stack = init_stack();
 
 	mark_board_as_fixed(board_to_fill);

@@ -13,7 +13,6 @@
 #include <time.h>
 #include <stdlib.h>
 #include "defines.h"
-#include "Game.h"
 #include "GUI.h"
 
 

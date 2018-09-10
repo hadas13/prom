@@ -1,7 +1,7 @@
 #ifndef GUI_H_
 #define GUI_H_
 
-#include "defines.h"
+#include "Game.h"
 
 #define NOT_VALID 0
 #define ERROR -1
@@ -44,11 +44,11 @@ int print_err_cell_assigned();
 
 int print_err_no_moves_to_undo();
 
-int print_undo_move(Move_l *curr_move);
+int print_undo_move(MoveInfo move);
 
 int print_err_no_moves_to_redo();
 
-int print_redo_move(Move_l *curr_move);
+int print_redo_move(MoveInfo curr_move);
 
 int print_number_of_solutions(int num_sol);
 

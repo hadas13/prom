@@ -1,9 +1,8 @@
 #ifndef BACKTRACKING_H_
 #define BACKTRACKING_H_
 
-#include "defines.h"
-#include "Solver.h"
 #include "Game.h"
+#include "Solver.h"
 
 /******* stack structure ***********/
 

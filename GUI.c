@@ -49,17 +49,12 @@ int print_board_contains_error() {
 	printf("Error: board contains errorneous values\n");
 	return VALID;
 }
-/* TODO need to check what to print here, I just added it for compilation */
-int print_err_board_validate_failed(){
-	printf("Error: board validation failed\n");
-	return VALID;
-}
 
 void print_frame(Board *board){
 	/* prints "-" according to number of cells in block */
-	int i = 1;
-	int num = (4 * board->n + board->m_rows) + 1;
-	for (; i < num; i++){
+	int i = 0;
+	int num = (((3 * board->m_cols) + 2) * board->m_rows) + 1;
+	for (i = 1; i < num; i++){
 		printf("-");
 	}
 	printf("-\n");
@@ -80,11 +75,11 @@ int print_cell(Cell cell, int mark_err) {
 	}
 
 	else if (cell.val == 0){ /* empty cell */
-		printf("    ");
+		printf("   ");
 	}
 
-	else{ /* filled a regular val */
-		printf(" %2d ", cell.val);
+	else{ /* filled a regullar val */
+		printf("  %d", cell.val);
 	}
 	return VALID;
 }
@@ -102,7 +97,7 @@ void print_board(Board *board, int mark_err){
 		for (j = 0; j < n;j++){
 			print_cell(board->game_table[i][j], mark_err);
 			if ((j+1) % m_c == 0){ /* frame of block */
-				printf("|");
+				printf(" |");
 			}
 		}
 		printf("\n");
@@ -152,24 +147,32 @@ int print_err_no_moves_to_undo() {
 	return VALID;
 }
 
-int print_undo_move(Move_l *curr_move) {
-	Changes_n *change;
+int print_undo_move(MoveInfo move) {
+	MoveList *chain;
 
-	change = curr_move->first_change;
-	if (change->next != NULL) {
-		if (change->val_after == 0) {
-			printf("Undo %d,%d: from _ to %d\n", change->row, change->col,
-			       	change->val_before);
+	if (move.row != EMPTY_VALUE_FOR_INIT || move.col != EMPTY_VALUE_FOR_INIT ||
+			move.val_before != EMPTY_VALUE_FOR_INIT ||
+			move.val_after != EMPTY_VALUE_FOR_INIT) {
+		/* not a subchain of moves */
+		printf("Undo %d,%d: from ", move.row, move.col);
+		if (move.val_after == UNASSIGNED) {
+			printf("_ to ");
+		} else {
+			printf("%d to ", move.val_after);
 		}
-		else if (change->val_before == 0) {
-			printf("Undo %d,%d: from %d to _\n", change->row, change->col,
-			       	change->val_after);
+
+		if (move.val_before == UNASSIGNED) {
+			printf("_\n");
+		} else {
+			printf("%d\n", move.val_before);
 		}
-		else {
-			printf("Undo %d,%d: from %d to %d\n", change->row, change->col,
-					change->val_after, change->val_before);
+	} else if (move.subchain != NULL) {
+		/* subchain of moves */
+		chain = move.subchain;
+		while (chain != NULL) {
+			print_undo_move(chain->move);
+			chain = chain->next;
 		}
-		change = change->next;
 	}
 	return VALID;
 }
@@ -179,24 +182,32 @@ int print_err_no_moves_to_redo() {
 	return VALID;
 }
 
-int print_redo_move(Move_l *curr_move) {
-	Changes_n *change;
+int print_redo_move(MoveInfo move) {
+	MoveList *chain;
 
-	change = curr_move->first_change;
-	if (change->next != NULL) {
-		if (change->val_after == 0) {
-			printf("Redo %d,%d: from %d to _\n", change->row, change->col,
-			       	change->val_before);
+	if (move.row != EMPTY_VALUE_FOR_INIT || move.col != EMPTY_VALUE_FOR_INIT ||
+			move.val_before != EMPTY_VALUE_FOR_INIT ||
+			move.val_after != EMPTY_VALUE_FOR_INIT) {
+		/* not a subchain of moves */
+		printf("Redo %d,%d: from ", move.row, move.col);
+		if (move.val_before == UNASSIGNED) {
+			printf("_ to ");
+		} else {
+			printf("%d to ", move.val_before);
 		}
-		else if (change->val_before == 0) {
-			printf("Redo %d,%d: from _ to %d\n", change->row, change->col,
-			       	change->val_after);
+
+		if (move.val_after == UNASSIGNED) {
+			printf("_\n");
+		} else {
+			printf("%d\n", move.val_after);
 		}
-		else {
-			printf("Redo %d,%d: from %d to %d\n", change->row, change->col,
-					change->val_before, change->val_after);
+	} else if (move.subchain != NULL) {
+		/* subchain of moves */
+		chain = move.subchain;
+		while (chain != NULL) {
+			print_redo_move(chain->move);
+			chain = chain->next;
 		}
-		change = change->next;
 	}
 	return VALID;
 }
