@@ -92,7 +92,6 @@ int count_num_of_filled_cells(Board *board) {
 
 	return cnt;
 }
-}
 
 int stop_game(Board *board){
 	int stop;
@@ -620,7 +619,7 @@ int remove_num_cells(Board *board, int num) {
 }
 
 int play_generate(Game *game, Board *board, int cells_to_fill, int cells_to_keep){
-	Board *iter_board;
+	Board *iter_board = NULL;
 	Cell_Item *x_cells_arr = NULL;
 	int iter;
 	int cells_to_remove = board->n * board->n - cells_to_keep;
@@ -643,10 +642,10 @@ int play_generate(Game *game, Board *board, int cells_to_fill, int cells_to_keep
 			
 			update_errors_on_board(iter_board);
 			remove_num_cells(iter_board, cells_to_remove);
-			if (create_generate_chain(board, iter_board, move) != VALID) {
-				printf("Error: couldn't create chain of generate moves\n");
-				return NOT_VALID;
-			}
+			/*if (create_generate_chain(board, iter_board, move) != VALID) {*/
+				/*printf("Error: couldn't create chain of generate moves\n");*/
+				/*return NOT_VALID;*/
+			/*}*/
 			print_board(board, game->mark_err);
 			free(x_cells_arr);
 			return VALID;

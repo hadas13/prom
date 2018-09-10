@@ -110,12 +110,13 @@ int append_new_move_to_moves_list(MoveList *curr_move, MoveInfo new_move) {
 	return VALID;
 }
 
-int create_generate_chain(Board *game_board, Board *generate_board, MoveInfo move) {
-	MoveList *generate_chain;
-	MoveInfo new_move;
-	int r = 0, c = 0;
+/*int create_generate_chain(Board *game_board, Board *generate_board, MoveInfo move) {*/
+	/*MoveList *generate_chain;*/
+	/*MoveInfo new_move;*/
+	/*int r = 0, c = 0;*/
 
-}
+
+/*}*/
 
 int create_autofill_chain(MoveList **chain) {
 	MoveInfo init_move;
