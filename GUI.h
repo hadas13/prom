@@ -73,4 +73,6 @@ int print_hint(int clue);
 int print_validation_failed();
 
 int print_validation_passed();
+
+int print_board_reset();
 #endif /* GAME_H_ */

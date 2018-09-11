@@ -5,7 +5,6 @@ int create_new_move(Board *board, MoveInfo *new_move, int row, int column, int v
 		print_err_cell_is_fixed();
 		return NOT_VALID;
 	}
-
 	init_empty_game_move_info(new_move);
 	new_move->row = row + 1;
 	new_move->col = column + 1;
@@ -25,7 +24,6 @@ int find_last_move(MoveList *chain, MoveList **ending) {
 		current = current->next;
 		not_in_loop += 1;
 	}
-
 	if (current->next == NULL) {
 		*ending = current;
 		return VALID;
@@ -51,6 +49,7 @@ int find_first_move(MoveList *chain, MoveList **ret_first) {
 	printf("Error: couldn't find first move in find_first_move\n");
 	return NOT_VALID;
 }
+
 int remove_next_moves(MoveList *begining) {
 	int not_in_loop = 0;
 	MoveList *current;
@@ -66,6 +65,7 @@ int remove_next_moves(MoveList *begining) {
 			remove_next_moves(((MoveList *) current->move.subchain));
 			free(current->move.subchain);
 		}
+
 		/* there is one change */
 		current = current->prev;
 		free(current->next);
@@ -81,7 +81,9 @@ int remove_next_moves(MoveList *begining) {
 		printf("Error: something wrong happend in remove_next_moves\n");
 		return NOT_VALID;
 	}
+
 }
+
 
 int append_new_move_to_moves_list(MoveList *curr_move, MoveInfo new_move) {
 	if (remove_next_moves(curr_move) != VALID) {
@@ -94,6 +96,7 @@ int append_new_move_to_moves_list(MoveList *curr_move, MoveInfo new_move) {
 		print_malloc_failed_err();
 		exit(NOT_VALID);
 	}
+
 	curr_move->next->move.row = new_move.row;
 	curr_move->next->move.col = new_move.col;
 	curr_move->next->move.val_before = new_move.val_before;
@@ -111,19 +114,24 @@ int append_new_move_to_moves_list(MoveList *curr_move, MoveInfo new_move) {
 	/*MoveList *generate_chain;*/
 	/*MoveInfo new_move;*/
 	/*int r = 0, c = 0;*/
+
+
 /*}*/
 
 int create_autofill_chain(MoveList **chain) {
 	MoveInfo init_move;
+
 	if (init_empty_game_move_info(&init_move) != VALID) {
 		printf("Error: couldn't init empty game move in create_autofill_chain\n");
 		return NOT_VALID;
 	}
+
 	(* chain) = (MoveList *) malloc(sizeof(MoveList));
 	if (chain == NULL) {
 		print_malloc_failed_err();
 		exit(NOT_VALID);
 	}
+
 	(* chain)->move.row = init_move.row;
 	(* chain)->move.col = init_move.col;
 	(* chain)->move.val_before = init_move.val_before;
@@ -133,12 +141,12 @@ int create_autofill_chain(MoveList **chain) {
 	(* chain)->move.subchain = init_move.subchain;
 	(* chain)->next = NULL;
 	(* chain)->prev = NULL;
+
 	return VALID;
 }
 
 int remove_moves_from_begining(MoveList **chain) {
 	MoveList *start;
-
 	if (find_first_move(*chain, &start) != VALID) {
 		printf("Error: remove_moves_from_begining failed - couldn't find begining\n");
 		return NOT_VALID;
@@ -164,7 +172,7 @@ int undo_more_that_one_changes(Board *board, MoveList *curr_chain) {
 	}
 
 	while (chain_for_changes != NULL) {
-		move = chain_for_changes->move;
+		move = chain_for_changes->move; 
 		if (move.row != EMPTY_VALUE_FOR_INIT || move.col != EMPTY_VALUE_FOR_INIT ||
 				move.val_before != EMPTY_VALUE_FOR_INIT ||
 			       	move.val_after != EMPTY_VALUE_FOR_INIT ||
@@ -177,7 +185,6 @@ int undo_more_that_one_changes(Board *board, MoveList *curr_chain) {
 		}
 		chain_for_changes = chain_for_changes->prev;
 	}
-
 	return VALID;
 }
 
@@ -193,17 +200,20 @@ int undo_on_board(Board *board, MoveInfo current) {
 		/* undo of more than one changes/moves */
 		return undo_more_that_one_changes(board, current.subchain);
 	}
+
 }
 
 int redo_more_that_one_changes(Board *board, MoveList *curr_chain) {
 	MoveList *chain_for_changes;
 	MoveInfo move;
+
 	if (find_first_move(curr_chain, &chain_for_changes) != VALID) {
 		printf("Error: couldn't find the first change in the chain - redo_more_than_one_changes\n");
 		return NOT_VALID;
 	}
+
 	while (chain_for_changes != NULL) {
-		move = chain_for_changes->move;
+		move = chain_for_changes->move; 
 		if (move.row != EMPTY_VALUE_FOR_INIT || move.col != EMPTY_VALUE_FOR_INIT ||
 				move.val_before != EMPTY_VALUE_FOR_INIT ||
 			       	move.val_after != EMPTY_VALUE_FOR_INIT ||
@@ -216,7 +226,6 @@ int redo_more_that_one_changes(Board *board, MoveList *curr_chain) {
 		}
 		chain_for_changes = chain_for_changes->next;
 	}
-
 	return VALID;
 }
 
@@ -232,6 +241,7 @@ int redo_on_board(Board *board, MoveInfo current) {
 		/* undo of more than one changes/moves */
 		return redo_more_that_one_changes(board, current.subchain);
 	}
+
 }
 
 int init_empty_game_move_info(MoveInfo *move) {
