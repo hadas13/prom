@@ -179,7 +179,6 @@ int filled_cell(Board *board, Game *game, int col, int row, int val) {
 		}
 		board->game_table[row][col].val = UNASSIGNED;
 		board->game_table[row][col].is_err = FALSE;
-		print_board(board, game->mark_err);
 	}
 
        	else {
@@ -271,8 +270,8 @@ int play_hint(struct Command command, Board *board){
 		return NOT_VALID;
 	}
 
-	row = Y - 1;
-	col = X - 1;
+	row = Y; /* no -1 needed to run with ILP */
+	col = X; /* no -1 needed to run with ILP */
 	clue = run_ILP(board, RUN_HINT, row, col);
 	
 	if (clue == NOT_VALID) {
@@ -792,6 +791,7 @@ int read_sudoku(char *path, Board *board){
 	}
 
 	board->filled = count; /* updating the number of filled cells */
+	board->num_err = 0;
 	fclose(input);
 	return VALID;
 }
@@ -802,7 +802,7 @@ int play_solve(Board *board, char *path, Game *game){
 		return NOT_VALID;
 	}
 
-	free_all_moves(game->curr_move); /* clear the linked list */
+	remove_moves_from_begining(&(game->curr_move)); /* clear the linked list */ /* TODO check function calling */
 	game->game_mode = SOLVE_MODE;
 	return VALID;
 }
@@ -826,7 +826,7 @@ int play_edit(Board *board, char *path, Game *game){
 				board->game_table[row][col].is_err = 0;
 			}
 		}
-		free_all_moves(game->curr_move); /* clear the linked list */
+		remove_moves_from_begining(&(game->curr_move)); /* clear the linked list */ /* TODO check function calling */
 		game->game_mode = EDIT_MODE;
 		return VALID;
 	}
@@ -835,7 +835,7 @@ int play_edit(Board *board, char *path, Game *game){
 		return NOT_VALID;
 	}
 	else{ /* sudoku updated from file */
-		free_all_moves(game->curr_move); /* clear the linked list */
+		remove_moves_from_begining(&(game->curr_move)); /* clear the linked list */ /* TODO check function calling */
 		game->game_mode = EDIT_MODE;
 		return VALID;
 	}
@@ -851,10 +851,17 @@ int play_exit(Board *board, Game *game){
 void play(){
 	Game game;
 	Board *board;
-	Board *temp_board;
+	MoveList initial_move;
 	struct Command command;
 
-	game = init_game();
+	/* initializing the game */
+	game.game_mode = INIT_MODE;
+	game.mark_err = TRUE;
+	init_empty_game_move_info(&(initial_move.move));
+	initial_move.next = NULL;
+	initial_move.prev = NULL;
+	game.curr_move = &initial_move;
+
 	board = init_board(9, 3, 3, 0); /* initialize a generic board */
 
 	printf("Sudoku\n");
@@ -905,7 +912,6 @@ void play(){
 					break;
 				case SET:
 					play_set(command, board, &game);
-					print_board(board, game.mark_err);
 					if (board->filled == board->n * board->n){ /* board is full */
 						if(play_validate(board)){
 							/* validation passed */
@@ -937,14 +943,7 @@ void play(){
 					play_num_solutions(board);
 					break;
 				case AUTOFILL:
-					temp_board = play_autofill(board, &game, 1);
-					if (temp_board == 0){ /* function didn't work */
-						temp_board = NULL;
-					}
-					else{
-						board = temp_board;
-						print_board(board, game.mark_err);
-					}
+					play_autofill(&board, &game, TRUE);
 					break;
 				case RESET: /* TODO check what about this part */
 					printf("play reset\n");
@@ -968,11 +967,10 @@ void play(){
 					play_exit(board, &game);
 					return;
 				case PRINT_BOARD:
-					print_board(board, 1); /* TODO check if 1 indicates to mark errors or not */
+					print_board(board, TRUE); /* TODO check if 1 indicates to mark errors or not */
 					break;
 				case SET:
 					play_set(command, board, &game);
-					print_board(board, 1);
 					break;
 				case GENERATE:
 					play_generate(&game, board, command.X, command.Y);
