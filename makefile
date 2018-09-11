@@ -1,5 +1,5 @@
 CC = gcc
-OBJS = Game.o linked_list.o Backtracking.o Parser.o Solver.o MainAux.o GUI.o ILP.o main.o
+OBJS = Game.o Moves.o Backtracking.o Parser.o Solver.o MainAux.o GUI.o ILP.o main.o
 EXEC = sudoku
 COMP_FLAG = -ansi -Wall -Wextra \
 -Werror -pedantic-errors -g
@@ -20,7 +20,7 @@ GUI.o: GUI.c GUI.h
 	$(CC) $(COMP_FLAG) $(GUROBI_COMP) -c $*.c
 Solver.o: Solver.c Solver.h
 	$(CC) $(COMP_FLAG) $(GUROBI_COMP) -c $*.c
-linked_list.o: linked_list.c linked_list.h
+Moves.o: Moves.c Moves.h
 	$(CC) $(COMP_FLAG) $(GUROBI_COMP) -c $*.c
 Backtracking.o: Backtracking.c Backtracking.h
 	$(CC) $(COMP_FLAG) $(GUROBI_COMP) -c $*.c

@@ -152,24 +152,32 @@ int print_err_no_moves_to_undo() {
 	return VALID;
 }
 
-int print_undo_move(Move_l *curr_move) {
-	Changes_n *change;
+int print_undo_move(MoveInfo move) {
+	MoveList *chain;
 
-	change = curr_move->first_change;
-	if (change->next != NULL) {
-		if (change->val_after == 0) {
-			printf("Undo %d,%d: from _ to %d\n", change->row, change->col,
-			       	change->val_before);
+	if (move.row != EMPTY_VALUE_FOR_INIT || move.col != EMPTY_VALUE_FOR_INIT ||
+				move.val_before != EMPTY_VALUE_FOR_INIT ||
+				move.val_after != EMPTY_VALUE_FOR_INIT) {
+			/* not a subchain of moves */
+			printf("Undo %d,%d: from ", move.row, move.col);
+			if (move.val_after == UNASSIGNED) {
+				printf("_ to ");
+			} else {
+				printf("%d to ", move.val_after);
+			}
+
+			if (move.val_before == UNASSIGNED) {
+				printf("_\n");
+			} else {
+				printf("%d\n", move.val_before);
 		}
-		else if (change->val_before == 0) {
-			printf("Undo %d,%d: from %d to _\n", change->row, change->col,
-			       	change->val_after);
-		}
-		else {
-			printf("Undo %d,%d: from %d to %d\n", change->row, change->col,
-					change->val_after, change->val_before);
-		}
-		change = change->next;
+	} else if (move.subchain != NULL) {
+			/* subchain of moves */
+			chain = move.subchain;
+			while (chain != NULL) {
+				print_undo_move(chain->move);
+				chain = chain->next;
+			}
 	}
 	return VALID;
 }
@@ -179,24 +187,32 @@ int print_err_no_moves_to_redo() {
 	return VALID;
 }
 
-int print_redo_move(Move_l *curr_move) {
-	Changes_n *change;
+int print_redo_move(MoveInfo move) {
+	MoveList *chain;
 
-	change = curr_move->first_change;
-	if (change->next != NULL) {
-		if (change->val_after == 0) {
-			printf("Redo %d,%d: from %d to _\n", change->row, change->col,
-			       	change->val_before);
+	if (move.row != EMPTY_VALUE_FOR_INIT || move.col != EMPTY_VALUE_FOR_INIT ||
+			move.val_before != EMPTY_VALUE_FOR_INIT ||
+			move.val_after != EMPTY_VALUE_FOR_INIT) {
+		/* not a subchain of moves */
+		printf("Redo %d,%d: from ", move.row, move.col);
+		if (move.val_before == UNASSIGNED) {
+			printf("_ to ");
+		} else {
+			printf("%d to ", move.val_before);
 		}
-		else if (change->val_before == 0) {
-			printf("Redo %d,%d: from _ to %d\n", change->row, change->col,
-			       	change->val_after);
+
+		if (move.val_after == UNASSIGNED) {
+			printf("_\n");
+		} else {
+			printf("%d\n", move.val_after);
 		}
-		else {
-			printf("Redo %d,%d: from %d to %d\n", change->row, change->col,
-					change->val_before, change->val_after);
-		}
-		change = change->next;
+	} else if (move.subchain != NULL) {
+			/* subchain of moves */
+			chain = move.subchain;
+			while (chain != NULL) {
+				print_redo_move(chain->move);
+				chain = chain->next;
+			}
 	}
 	return VALID;
 }
