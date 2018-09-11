@@ -220,7 +220,6 @@ int play_set(struct Command command, Board *board, Game *game){
 	
  	else if (board->game_table[row][col].is_fixed){ /* fixed cell */
  		print_err_cell_is_fixed();
-  }
 		return NOT_VALID;
 	}
 
@@ -800,51 +799,6 @@ int play_solve(Board *board, char *path, Game *game){
 	return VALID;
 }
 
-
-int play_undo(Board *board, Game *game) {
-	MoveInfo move_to_change;
-	init_empty_game_move_info(&move_to_change);
-
-	if (game->curr_move->prev == NULL) {
-		/* this is the first move in the game */
-		print_err_no_moves_to_undo();
-		return NOT_VALID;
-	}
-	
-	move_to_change = game->curr_move->move;
-	if (undo_on_board(board, game->curr_move->move) != VALID) {
-		printf("Error: couldn't make undo on board\n");
-		return NOT_VALID;
-	}
-	print_board(board, game->mark_err);
-	print_undo_move(move_to_change);
-
-	game->curr_move = game->curr_move->prev;
-	return VALID;
-}
-
-int play_redo(Board *board, Game *game) {
-	MoveInfo move_to_change;
-	init_empty_game_move_info(&move_to_change);
-
-	if (game->curr_move->next == NULL) {
-		/* this is the first move in the game */
-		print_err_no_moves_to_redo();
-		return NOT_VALID;
-	}
-	
-	move_to_change = game->curr_move->next->move;
-	if (redo_on_board(board, game->curr_move->next->move) != VALID) {
-		printf("Error: couldn't make undo on board\n");
-		return NOT_VALID;
-	}
-	print_board(board, game->mark_err);
-	print_redo_move(move_to_change);
-
-	game->curr_move = game->curr_move->next;
-	return VALID;
-}
-
 int play_edit(Board *board, char *path, Game *game){
 	int col, row, n;
 
@@ -954,7 +908,7 @@ void play(){
 					break;
 				case SET:
 					play_set(command, board, &game);
-          print_board(board, game->mark_err); /* TODO - not sure if it suppose to be here */
+          print_board(board, game.mark_err); /* TODO - not sure if it suppose to be here */
 					if (board->filled == board->n * board->n){ /* board is full */
 						if(play_validate(board)){
 							/* validation passed */
