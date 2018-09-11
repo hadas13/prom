@@ -6,25 +6,21 @@
 #include <stdlib.h>
 
 /***** consts for moves chain *********/
+
+#define EMPTY_VALUE_FOR_INIT -1
 #define TRUE       1
 #define FALSE      0
 #define VALID      1
 #define NOT_VALID  0
 #define UNASSIGNED 0
-
-#define PROBBLY_IN_LOOP       20000
-#define EMPTY_VALUE_FOR_INIT -1
-#define FINISHED_UNDO           3
-
+#define PROBBLY_IN_LOOP      20000
 
 /***** functions **********/
+
 /* checking if the move is fixed value, if not - inserting the new move to new_move */
 int create_new_move(Board *board, MoveInfo *new_move, int row, int column, int value);
 
 /*
- * from @param begining removes all next moves in the linked list */
-int remove_next_moves(MoveList *begining);
-/* 
  * @param curr_move: the current move in the game that we are playing in.
  * @param new_move: the new information for the new move that the function will add to the new
  *		    move list.
@@ -34,7 +30,6 @@ int append_new_move_to_moves_list(MoveList *curr_move, MoveInfo new_move);
 
 /* create chain of moves that connected to generate move */
 /*int create_generate_chain(Board *game_board, Board *generate_board, MoveInfo move);*/
-
 /*
  * @param **chain: the main chain of moves that going to be hold all the changes that
  *		   going to be made in autofill.
@@ -44,6 +39,8 @@ int create_autofill_chain(MoveList **chain);
 
 /* finds the begining of chain, and removes all the moves */
 int remove_moves_from_begining(MoveList **chain);
+
+int remove_next_moves(MoveList *begining);
 
 /* makes undo on board */
 int undo_on_board(Board *board, MoveInfo current);
