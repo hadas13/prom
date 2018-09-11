@@ -828,7 +828,10 @@ int play_edit(Board *board, char *path, Game *game){
 				board->game_table[row][col].is_err = 0;
 			}
 		}
-		free_all_moves(game->curr_move); /* clear the linked list */
+
+		if (remove_moves_from_begining(&(game->curr_move)) != VALID) {
+		return NOT_VALID;
+		}
 		game->game_mode = EDIT;
 		return VALID;
 	}
@@ -837,7 +840,9 @@ int play_edit(Board *board, char *path, Game *game){
 		return NOT_VALID;
 	}
 	else{ /* sudoku updated from file */
-		free_all_moves(game->curr_move); /* clear the linked list */
+		if (remove_moves_from_begining(&(game->curr_move)) != VALID) {
+			return NOT_VALID;
+		}
 		game->game_mode = EDIT;
 		return VALID;
 	}
@@ -856,6 +861,7 @@ void play(){
 	struct Command command;
 	int m_rows, m_cols, n, fixed, errors = 0;
 
+	/* TODO - to omer: check how i wrote that in the main section that i uploaded */
 	game = init_game();
 	board = init_board(n, m_rows, m_cols, fixed); /* TODO check what to do with num of error cells */
 
@@ -868,7 +874,7 @@ void play(){
 		if (command.valid == 0){ /* invalid command */
 			printf("Error: invalid command\n");
 		}
-		else if(game->game_mode == INIT){ /* init mode */
+		else if(game->game_mode == INIT_MODE){ /* init mode */
 			switch (command.command){
 			case SOLVE:
 				play_solve(board, command.path, game);
@@ -907,12 +913,14 @@ void play(){
 					break;
 				case SET:
 					play_set(command, board, game);
+					/* TODO - to omer - i'm not sure we need to print the board here, and if we do - maybe we should print it in the play */
 					print_board(board, game->mark_err);
+					/* TODO - to omer - don't use filled but call the function that i wrote -> "num_filled_cells = count_num_of_filled_cells(board);" it's more reliable */
 					if (board->filled == board->n * board->n){ /* board is full */
 						if(play_validate(board)){
 							/* validation passed */
 							printf("Puzzle solved successfully\n");
-							game->game_mode = INIT;
+							game->game_mode = INIT_MODE;
 						}
 						else{ /* validation failed */
 							printf("Puzzle solution erroneous\n");
@@ -939,7 +947,7 @@ void play(){
 					play_num_solutions();
 					break;
 				case AUTOFILL: /* TODO check what about this part */
-					autofill();
+					play_autofill();
 					break;
 				case RESET: /* TODO check what about this part */
 					play_reset();
