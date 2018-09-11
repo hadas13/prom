@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include "defines.h"
 #include "GUI.h"
+#include "Solver.h"
 
 
 /************** solver's MACROS ***********/

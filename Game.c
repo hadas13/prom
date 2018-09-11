@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "Game.h"
 
 Cell init_cell() {
@@ -249,7 +248,6 @@ int play_hint(struct Command command, Board *board){
 	int X = command.X;
 	int Y = command.Y;
 	int clue = 0;
-	/*int row, col;*/
 
 	if (!is_row_col_param_valid(board->n, X, Y)) {
 		print_err_row_col_not_in_range();
@@ -271,9 +269,7 @@ int play_hint(struct Command command, Board *board){
 		return NOT_VALID;
 	}
 
-	/*row = Y - 1;*/
-	/*col = X - 1;*/
-	/*clue = run_ILP(board, RUN_HINT, row, col);*/
+	clue = run_ILP(board, RUN_HINT, Y, X);
 	
 	if (clue == NOT_VALID) {
 		print_err_unsolvable();
@@ -449,13 +445,11 @@ int play_save(Board *board, Game *game, char *path) {
 			print_board_contains_error();
 			return NOT_VALID;
 		}
-		/* TODO - check it with omer */
-		/*if (run_ILP(board, RUN_VALIDATE) != VALID) {*/
-                               /*print_err_board_validate_failed();*/
-			/*return NOT_VALID;*/
-		/*}*/
+		if (run_ILP(board, RUN_VALIDATE, 0, 0) != VALID) {
+			print_err_board_validate_failed();
+			return NOT_VALID;
+		}
 	}
-
 	fd = fopen(path, "w");
 
 	if (fd == NULL) {
@@ -666,25 +660,110 @@ int play_validate(Board *board) {
 		return NOT_VALID;
 	}
 
-	/*if (run_ILP(board, RUN_VALIDATE) == NOT_VALID) {*/
-		/*print_validation_failed();*/
-		/*return NOT_VALID;*/
-	/*}*/
-	/*else{*/
-		/*print_validation_passed();*/
-		/*return VALID;*/
-	/*}*/
-	return VALID;
-}
+	if (run_ILP(board, RUN_VALIDATE, 0, 0) == NOT_VALID) {
+		print_validation_failed();
+		return NOT_VALID;
+	}
+	else{
+		print_validation_passed();
+		return VALID;
+	}
+	return VALID;}
 
 int free_game(Game *game) {
 	if (remove_moves_from_begining(&(game->curr_move)) != VALID) {
 		return NOT_VALID;
 	}
 
-	/*free(game);*/
 	return VALID;
 }
+
+int read_sudoku(char *path, Board *board){
+	int row, col, n, count;
+	FILE *input;
+	char read[2] = {'\0', '\0'};
+
+	input = fopen(path, "r+");
+	if (input == NULL){
+		printf("problem with file\n");
+		return NOT_VALID;
+	}
+
+	free_matrix(board->game_table, board->n); /* free the current game table */
+
+	/* go over spaces until we find dimensions of sub block */
+	while (isspace(read[0] = fgetc(input))){}
+	row = string_to_int(read);
+	while (isspace(read[0] = fgetc(input))){}
+	col = string_to_int(read);
+	n = col * row;
+
+	/* update current board with new dimensions and create new empty game table */
+	board->m_rows = row;
+	board->m_cols = col;
+	board->n = n;
+	init_game_table(board);
+
+	/* iterate on the file to update the new board */
+	count = 0;
+	row = 0;
+	while(row < n){ /* go over rows */
+		col = 0;
+		while(col < n){ /* go over columns */
+			board->game_table[row][col].is_err = 0;
+			if(!isspace(read[0] = fgetc(input))){ /* found a value or a dot */
+				if (read[0] != '.'){ /* found a value or first digit of the value of a cell */
+					board->game_table[row][col].val = string_to_int(read);
+					if (board->game_table[row][col].val != 0){ /* increment filled cells */
+						count += 1;
+					}
+					if (isspace(read[0] = fgetc(input))){ /* unfixed value */
+						board->game_table[row][col].is_fixed = 0;
+						col += 1;
+					}
+					else if (read[0] != '.'){ /* double digit value in the cell */
+						board->game_table[row][col].val *= 10;
+						board->game_table[row][col].val += string_to_int(read);
+						if (isspace(read[0] = fgetc(input))){ /* unfixed value of double digit */
+							board->game_table[row][col].is_fixed = 0;
+							col += 1;
+						}
+						else{ /* fixed double digit value */
+							board->game_table[row][col].is_fixed = 1;
+							col += 1;
+						}
+					}
+					else{ /* a dot of a fixed cell */
+						board->game_table[row][col].is_fixed = 1;
+						col += 1;
+					}
+				}
+				else{ /* a fixed cell */
+					board->game_table[row][col].is_fixed = 1;
+					col += 1;
+				}
+			}
+		}
+		row += 1;
+	}
+
+	board->filled = count; /* updating the number of filled cells */
+	fclose(input);
+	return VALID;
+}
+
+int play_solve(Board *board, char *path, Game *game){
+	if (read_sudoku(path, board) == NOT_VALID){ /* trouble opening the file */
+		printf("Error: File doesn't exist or cannot be opened\n");
+		return NOT_VALID;
+	}
+	if (remove_moves_from_begining(&(game->curr_move)) != VALID) {
+		return NOT_VALID;
+	}
+	game->game_mode = SOLVE;
+	return VALID;
+}
+
 
 int play_undo(Board *board, Game *game) {
 	MoveInfo move_to_change;
@@ -728,4 +807,197 @@ int play_redo(Board *board, Game *game) {
 
 	game->curr_move = game->curr_move->next;
 	return VALID;
+}
+
+int play_edit(Board *board, char *path, Game *game){
+	int col, row, n;
+
+	if (path != NULL){ /* path wasn't provided */
+		free_matrix(board->game_table, board->n); /* clean old board */
+		board->m_cols = 3;
+		board->m_rows = 3;
+		board->n = 9;
+		board->filled = 0;
+		board->num_err = 0;
+		init_game_table(board); /* create new empty board */
+		n = board->n;
+		for (row = 0; row < n; row++){
+			for (col = 0; col < n; col++){
+				board->game_table[row][col].val = 0;
+				board->game_table[row][col].is_fixed = 0;
+				board->game_table[row][col].is_err = 0;
+			}
+		}
+		free_all_moves(game->curr_move); /* clear the linked list */
+		game->game_mode = EDIT;
+		return VALID;
+	}
+	else if(read_sudoku(path, board) == NOT_VALID){ /* reading the file failed */
+		printf("Error: File cannot be opened\n");
+		return NOT_VALID;
+	}
+	else{ /* sudoku updated from file */
+		free_all_moves(game->curr_move); /* clear the linked list */
+		game->game_mode = EDIT;
+		return VALID;
+	}
+}
+
+int play_exit(Board *board, Game *game){
+	free_game(game);
+	free_board(board);
+	printf("Exiting...\n");
+	return VALID;
+}
+
+void play(){
+	Game *game;
+	Board *board;
+	struct Command command;
+	int m_rows, m_cols, n, fixed, errors = 0;
+
+	game = init_game();
+	board = init_board(n, m_rows, m_cols, fixed); /* TODO check what to do with num of error cells */
+
+	printf("Sudoku\n");
+	printf("------\n");
+
+	while (TRUE){ /* keep playing */
+		printf("Enter your command:\n");
+		command = get_command();
+		if (command.valid == 0){ /* invalid command */
+			printf("Error: invalid command\n");
+		}
+		else if(game->game_mode == INIT){ /* init mode */
+			switch (command.command){
+			case SOLVE:
+				play_solve(board, command.path, game);
+				command.path = NULL;
+				break;
+			case EDIT:
+				play_edit(board, command.path, game);
+				command.path = NULL;
+				break;
+			case EXIT:
+				play_exit();
+				return;
+			default:
+				printf("Error: invalid command\n");
+				break;
+			}
+		}
+		else if(game->game_mode == SOLVE){ /* solve mode */
+			switch (command.command){
+				case SOLVE:
+					play_solve(board, command.path, game);
+					command.path = NULL;
+					break;
+				case EDIT:
+					play_edit(board, command.path, game);
+					command.path = NULL;
+					break;
+				case EXIT:
+					play_exit();
+					return;
+				case MARK_ERRORS:
+					play_mark_errors(game, command.X);
+					break;
+				case PRINT_BOARD:
+					print_board(board, game->mark_err);
+					break;
+				case SET:
+					play_set(command, board, game);
+					print_board(board, game->mark_err);
+					if (board->filled == board->n * board->n){ /* board is full */
+						if(play_validate(board)){
+							/* validation passed */
+							printf("Puzzle solved successfully\n");
+							game->game_mode = INIT;
+						}
+						else{ /* validation failed */
+							printf("Puzzle solution erroneous\n");
+						}
+					}
+					break;
+				case VALIDATE:
+					play_validate(board);
+					break;
+				case UNDO:
+					play_undo(); /* TODO needs to be written */
+					break;
+				case REDO:
+					play_redo(); /* TODO needs to be written */
+					break;
+				case SAVE:
+					play_save(board, game, command.path);
+					command.path = NULL;
+					break;
+				case HINT:
+					play_hint(command, board);
+					break;
+				case NUM_SOLUTIONS:
+					play_num_solutions();
+					break;
+				case AUTOFILL: /* TODO check what about this part */
+					autofill();
+					break;
+				case RESET: /* TODO check what about this part */
+					play_reset();
+					break;
+				default:
+					printf("Error: invalid command\n");
+					break;
+			}
+		}
+		else{ /* edit mode */
+			switch (command.command){
+				case SOLVE:
+					play_solve(board, command.path, game);
+					command.path = NULL;
+					break;
+				case EDIT:
+					play_edit(board, command.path, game);
+					command.path = NULL;
+					break;
+				case EXIT:
+					play_exit();
+					return;
+				case PRINT_BOARD:
+					print_board(board, 1); /* TODO check if 1 indicates to mark errors or not */
+					break;
+				case SET:
+					play_set(command, board, game);
+					print_board(board, 1);
+					break;
+				case GENERATE:
+					play_generate(game, board, command.X, command.Y);
+					break;
+				case VALIDATE:
+					play_validate(board);
+					break;
+				case UNDO:
+					play_undo(); /* TODO needs to be written */
+					break;
+				case REDO:
+					play_redo(); /* TODO needs to be written */
+					break;
+				case SAVE:
+					play_save(board, game, command.path);
+					command.path = NULL;
+					break;
+				case NUM_SOLUTIONS:
+					play_num_solutions();
+					break;
+				case RESET: /* TODO check what about this part */
+					play_reset();
+					break;
+				default:
+					printf("Error: invalid command\n");
+					break;
+			}
+		}
+	}
+
+	free_board(board);
+	free_game(game);
 }

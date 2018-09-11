@@ -1,13 +1,19 @@
 #ifndef GAME_H_
 #define GAME_H_
 
+#include <stdio.h>
+#include <string.h>
+
 #include "defines.h"
 #include "Parser.h"
 #include "Solver.h"
 #include "GUI.h"
 #include "Moves.h"
-#include "MainAux.h"
 #include "Backtracking.h"
+#include "ILP.h"
+#include "MainAux.h"
+
+
 
 #define MAX_ITER_GENERATE 1000 /* iterations num of generating x numbers in generate command */
 #define NOT_POSSIBLE_VAL -1
@@ -103,6 +109,31 @@ int play_num_solutions(Board *board);
 int play_generate(Game *game, Board *board, int x, int y);
 
 int free_game(Game *game);
+
+/*
+ * function that receives a path to a sudoku file and a board and reads the sudoku from the file to the board
+ */
+int read_sudoku(char *path, Board *board);
+
+/*
+ * function the receives a board and a file path and loads the sudoku in the file to play in solve mode.
+ * return 1 on success and 0 otherwise
+ */
+int play_solve(Board *board, char *path, Game *game);
+
+/*
+ * function the receives a board and an optional file path and loads the sudoku in the file to play in edit mode.
+ * return 1 on success and 0 otherwise
+ */
+int play_edit(Board *board, char *path, Game *game);
+
+
+/*
+ * function the frees all allocated memory and exits the game
+ */
+int play_exit(Board *board, Game *game);
+
+
 
 int play_undo(Board *board, Game *game);
 
