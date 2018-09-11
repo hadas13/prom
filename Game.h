@@ -16,6 +16,7 @@
 
 #define MAX_ITER_GENERATE 1000 /* iterations num of generating x numbers in generate command */
 #define NOT_POSSIBLE_VAL -1
+#define FINISHED_UNDO     3
 
 /****** functions ********/
 /*
@@ -128,4 +129,6 @@ int play_exit(Board *board, Game *game);
 int play_undo(Board *board, Game *game);
 
 int play_redo(Board *board, Game *game);
+
+int play_reset(Board *board, Game *game);
 #endif /* GAME_H_ */

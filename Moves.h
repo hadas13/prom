@@ -40,6 +40,8 @@ int create_autofill_chain(MoveList **chain);
 /* finds the begining of chain, and removes all the moves */
 int remove_moves_from_begining(MoveList **chain);
 
+int remove_next_moves(MoveList *begining);
+
 /* makes undo on board */
 int undo_on_board(Board *board, MoveInfo current);
 
