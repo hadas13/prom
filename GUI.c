@@ -50,11 +50,18 @@ int print_board_contains_error() {
 	return VALID;
 }
 
+/* TODO need to check what to print here, I just added it for compilation */
+int print_err_board_validate_failed(){
+	printf("Error: board validation failed\n");
+	return VALID;
+}
+
+
 void print_frame(Board *board){
 	/* prints "-" according to number of cells in block */
-	int i = 0;
-	int num = (((3 * board->m_cols) + 2) * board->m_rows) + 1;
-	for (i = 1; i < num; i++){
+	int i = 1;
+	int num = (4 * board->n + board->m_rows) + 1;
+	for (; i < num; i++){
 		printf("-");
 	}
 	printf("-\n");
@@ -75,11 +82,11 @@ int print_cell(Cell cell, int mark_err) {
 	}
 
 	else if (cell.val == 0){ /* empty cell */
-		printf("   ");
+		printf("    ");
 	}
 
-	else{ /* filled a regullar val */
-		printf("  %d", cell.val);
+	else{ /* filled a regular val */
+		printf(" %2d ", cell.val);
 	}
 	return VALID;
 }
@@ -97,7 +104,7 @@ void print_board(Board *board, int mark_err){
 		for (j = 0; j < n;j++){
 			print_cell(board->game_table[i][j], mark_err);
 			if ((j+1) % m_c == 0){ /* frame of block */
-				printf(" |");
+				printf("|");
 			}
 		}
 		printf("\n");
