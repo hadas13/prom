@@ -28,13 +28,11 @@ typedef struct _game_moves_list_t {
 	struct _game_moves_list_t *prev;
 } MoveList;
 
-
 typedef struct _cell_item {
 	int row;
 	int col;
 	int val;
 } Cell_Item;
-
 
 typedef enum _mode{INIT_MODE = 0, EDIT_MODE = 1, SOLVE_MODE = 2, EXIT_MODE = 3, ERROR_EXIT_MODE = 4} Mode;
 
@@ -59,5 +57,6 @@ typedef struct _game_parameters {
 	int mark_err;
  	MoveList *curr_move;
 } Game;
+
 
 #endif

@@ -224,3 +224,22 @@ struct Command get_command(){
 		return (com);
 	}
 }
+
+/*** NEW NEW NEW NEW NEW **
+int main(int argc, char **argv){
+	SP_BUFF_SET();
+	struct Command com;
+	com = get_command();
+	printf("COMMAND = %d\n", com.command);
+	printf("X = %d\n", com.X);
+	printf("Y = %d\n", com.Y);
+	printf("Z = %d\n", com.Z);
+	printf("VALID = %d\n", com.valid);
+	printf("before path\n");
+	printf("PATH = %s\n", com.path);
+	return 1;
+}
+** NEW NEW NEW NEW NEW ***/
+
+
+
