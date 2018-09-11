@@ -8,7 +8,7 @@
 #include "Moves.h"
 
 
-int main() {
+int main_not_used() {
 	MoveList initial_move;
 	Board *board;
 	Game game;
@@ -52,5 +52,10 @@ int main() {
 
 	free_board(board);
 	free_game(&game);
+	return 1;
+}
+
+int main(){
+	play();
 	return 1;
 }

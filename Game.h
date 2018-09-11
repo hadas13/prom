@@ -14,7 +14,6 @@
 #include "MainAux.h"
 
 
-
 #define MAX_ITER_GENERATE 1000 /* iterations num of generating x numbers in generate command */
 #define NOT_POSSIBLE_VAL -1
 
@@ -24,14 +23,6 @@
  * and prints the a line of "-" that frames the board
  */
 void print_frame(Board *board);
-
-/*
- * Function that receives a Command structure, checks if its valid
- * and handles the different commands types according to the instructions
- */
-
-
-/*void turn(struct Command command, Board *board, Game *game);*/
 
 
 /* 
@@ -50,6 +41,7 @@ int init_game_table(Board *board);
  * @param fixed_nums: number of fixed cells.
  * @return value: new game board and solution. 
  */
+
 Board *init_board(int n, int m_rows, int m_cols, int fixed_nums);
 
 Game init_game();
@@ -63,7 +55,7 @@ int play_mark_errors(Game *game, int is_mark);
  * or asked to exit, and 0 if the current games needs to continue
  */
 
-int stop_game(Board *board);
+int stop_game(Board *board); /* TODO delete */
 
 /*
  * Function that manages playing the game
@@ -132,8 +124,6 @@ int play_edit(Board *board, char *path, Game *game);
  * function the frees all allocated memory and exits the game
  */
 int play_exit(Board *board, Game *game);
-
-
 
 int play_undo(Board *board, Game *game);
 

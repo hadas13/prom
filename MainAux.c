@@ -29,7 +29,7 @@ int save_file_to(FILE *fd, Board *board, int mode) {
 	for (r = 0; r < board->n; r++) {
 		for (c = 0; c < board->n; c++) {
 			fprintf(fd, "%d", board->game_table[r][c].val);
-			if ((mode == EDIT) || (board->game_table[r][c].is_fixed)) {
+			if (((mode == EDIT_MODE) || (board->game_table[r][c].is_fixed)) && board->game_table[r][c].val != 0) {
 				/* marked as fixed */
 				fprintf(fd, ".");
 			}
@@ -56,5 +56,12 @@ int clean_vals_from_board(Board *board) {
 		}
 	}
 	return VALID;
+}
+
+void clear_path(char *path){
+	int i = 0;
+	for (; i < 256; i++){
+		path[i] = '\0';
+	}
 }
 
