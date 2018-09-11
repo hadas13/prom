@@ -908,7 +908,7 @@ void play(){
 					break;
 				case SET:
 					play_set(command, board, &game);
-          print_board(board, game.mark_err); /* TODO - not sure if it suppose to be here */
+					print_board(board, game.mark_err); /* TODO - not sure if it suppose to be here */
 					if (board->filled == board->n * board->n){ /* board is full */
 						if(play_validate(board)){
 							/* validation passed */
@@ -999,4 +999,38 @@ void play(){
 	}
 
 	free_board(board);
+}
+
+int play_all_undo(Board *board, Game *game, MoveInfo *undo_move) {
+	while (game->curr_move->prev != NULL) {
+		*undo_move = game->curr_move->move;
+		if (undo_on_board(board, game->curr_move->move) != VALID) {
+			printf("Error: couldn't make undo on board\n");
+			return NOT_VALID;
+		}
+
+		game->curr_move = game->curr_move->prev;
+
+	}
+
+	return FINISHED_UNDO;
+	
+}
+
+int play_reset(Board *board, Game *game) {
+	MoveInfo move;
+
+	init_empty_game_move_info(&move);
+	if (play_all_undo(board, game, &move) != FINISHED_UNDO) {
+		printf("Error: while play_reset, can't play undo\n");;
+		return NOT_VALID;
+	}
+
+	if (remove_next_moves(game->curr_move) != VALID) {
+		printf("Error: couldn't remove moves from this point in play_reset\n");
+		return NOT_VALID;
+	}
+
+	print_board_reset();
+	return VALID;
 }

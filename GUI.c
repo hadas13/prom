@@ -273,3 +273,8 @@ int print_validation_passed() {
 	printf("Validation passed: board is solvable\n");
 	return VALID;
 }
+
+int print_board_reset() {
+	printf("Board reset\n");
+	return VALID;
+}
