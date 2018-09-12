@@ -22,11 +22,15 @@ int print_malloc_failed_err();
 
 int print_board_contains_error();
 
+/*
+ * Function that receives a struct containing the board game and its dimensions
+ * and prints the a line of "-" that frames the board
+ */
 void print_frame(Board *board);
 
-int print_cell(Cell cell, int mark_err);
+int print_cell(Cell cell, int mark_err, Game *game);
 
-void print_board(Board *board, int mark_err);
+void print_board(Board *board, int mark_err, Game *game);
 
 int print_err_is_mark_val();
 

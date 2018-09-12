@@ -190,7 +190,7 @@ int filled_cell(Board *board, Game *game, int col, int row, int val) {
 		update_errors_on_board(board);
 	}
 
-	print_board(board, game->mark_err);
+	print_board(board, game->mark_err, game);
 	return VALID;
 }
 
@@ -389,7 +389,7 @@ int play_autofill(Board **board, Game *game, int to_print) {
 		printf("Error: couldn't get new board of autofill\n");
 		return NOT_VALID;
 	}
-	print_board(*board, game->mark_err);
+	print_board(*board, game->mark_err, game);
 	return VALID;
 }
 
@@ -622,7 +622,7 @@ int play_generate(Game *game, Board *board, int cells_to_fill, int cells_to_keep
 				/*printf("Error: couldn't create chain of generate moves\n");*/
 				/*return NOT_VALID;*/
 			/*}*/
-			print_board(board, game->mark_err);
+			print_board(board, game->mark_err, game);
 			free(x_cells_arr);
 			return VALID;
 		}
@@ -677,7 +677,7 @@ int play_undo(Board *board, Game *game) {
 		return NOT_VALID;
 	}
 
-	print_board(board, game->mark_err);
+	print_board(board, game->mark_err, game);
 	print_undo_move(move_to_change);
 
 	game->curr_move = game->curr_move->prev;
@@ -699,7 +699,7 @@ int play_redo(Board *board, Game *game) {
 		return NOT_VALID;
 	}
 
-	print_board(board, game->mark_err);
+	print_board(board, game->mark_err, game);
 	print_redo_move(move_to_change);
 
  	game->curr_move = game->curr_move->next;
@@ -776,7 +776,7 @@ int read_sudoku(char *path, Board *board){
 	}
 
 	board->filled = count; /* updating the number of filled cells */
-	board->num_err = 0;
+	update_errors_on_board(board); /* updating the error values of cells and board */
 	fclose(input);
 	return VALID;
 }
@@ -945,7 +945,7 @@ void play(){
 					play_mark_errors(&game, command.X);
 					break;
 				case PRINT_BOARD:
-					print_board(board, game.mark_err);
+					print_board(board, game.mark_err, &game);
 					break;
 				case SET:
 					play_set(command, board, &game);
@@ -1005,7 +1005,7 @@ void play(){
 					play_exit(board, &game);
 					return;
 				case PRINT_BOARD:
-					print_board(board, TRUE); /* TODO check if 1 indicates to mark errors or not */
+					print_board(board, TRUE, &game);
 					break;
 				case SET:
 					play_set(command, board, &game);

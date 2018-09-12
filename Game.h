@@ -19,13 +19,6 @@
 
  /****** functions ********/
 
-/*
- * Function that receives a struct containing the board game and its dimensions
- * and prints the a line of "-" that frames the board
- */
-void print_frame(Board *board);
-
-
 /* 
  * allocate two dim array in board->game_table and filled it with fixed numbers.
  * @param board: game board. insert to board->game_table.
@@ -56,12 +49,6 @@ int play_mark_errors(Game *game, int is_mark);
  * or asked to exit, and 0 if the current games needs to continue
  */
 
-int stop_game(Board *board); /* TODO delete */
-
-/*
- * Function that manages playing the game
- */
-
 void play();
 
 /*
@@ -83,12 +70,6 @@ int play_hint(struct Command command, Board *board);
  */
 
 int get_fixed();
-
-/*
- * Function that receives a board structure and prints the current board according to rules
- */
-
-void print_board(Board *board, int print_err);
 
 int update_errors_on_board(Board *board);
 

@@ -65,12 +65,12 @@ void print_frame(Board *board){
 	printf("-\n");
 }
 
-int print_cell(Cell cell, int mark_err) {
+int print_cell(Cell cell, int mark_err, Game *game) {
 	if (mark_err != FALSE && mark_err != TRUE) {
 		return NOT_VALID;
 	}
 
-	else if (cell.is_fixed){ /* fixed cell */
+	else if (cell.is_fixed && game->game_mode != EDIT_MODE){ /* fixed cell */
 		printf(" %2d.", cell.val);
 	}
 
@@ -89,7 +89,7 @@ int print_cell(Cell cell, int mark_err) {
 	return VALID;
 }
 
-void print_board(Board *board, int mark_err){
+void print_board(Board *board, int mark_err, Game *game){
 	int n = board->n; /* num of cells in a row of board */
 	int m_c = board->m_cols; /* num of cells in a column of block */
 	int m_r = board->m_rows; /* num of cells in a row of block */
@@ -100,7 +100,7 @@ void print_board(Board *board, int mark_err){
 	for (i = 0; i < n; i++){
 		printf("|"); /* start a block */
 		for (j = 0; j < n;j++){
-			print_cell(board->game_table[i][j], mark_err);
+			print_cell(board->game_table[i][j], mark_err, game);
 			if ((j+1) % m_c == 0){ /* frame of block */
 				printf("|");
 			}
