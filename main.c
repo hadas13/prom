@@ -33,7 +33,7 @@ int main_not_used() {
 	game.curr_move = &initial_move;
 	/*until here */
 	/*game.game_mode = EDIT_MODE;*/
-	/*play_generate(game,  board, 10, 6);*/
+	play_generate(&game,  board, 10, 10);
 	play_set(cmd1, board, &game);
 	play_set(cmd2, board, &game);
 	play_undo(board, &game); 

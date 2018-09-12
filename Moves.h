@@ -35,7 +35,10 @@ int append_new_move_to_moves_list(MoveList *curr_move, MoveInfo new_move);
  *		   going to be made in autofill.
  * @return value: valid or not_valid.
  */
-int create_autofill_chain(MoveList **chain);
+int create_empty_chain(MoveList **chain);
+
+/* create a generate move in main_move */
+int create_generate_chain(MoveInfo *main_move,Board *board, Board *generate_board);
 
 /* finds the begining of chain, and removes all the moves */
 int remove_moves_from_begining(MoveList **chain);

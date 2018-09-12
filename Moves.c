@@ -107,13 +107,7 @@ int append_new_move_to_moves_list(MoveList *curr_move, MoveInfo new_move) {
 	return VALID;
 }
 
-/*int create_generate_chain(Board *game_board, Board *generate_board, MoveInfo move) {*/
-	/*MoveList *generate_chain;*/
-	/*MoveInfo new_move;*/
-	/*int r = 0, c = 0;*/
-/*}*/
-
-int create_autofill_chain(MoveList **chain) {
+int create_empty_chain(MoveList **chain) {
 	MoveInfo init_move;
 	if (init_empty_game_move_info(&init_move) != VALID) {
 		printf("Error: couldn't init empty game move in create_autofill_chain\n");
@@ -135,6 +129,36 @@ int create_autofill_chain(MoveList **chain) {
 	(* chain)->prev = NULL;
 	return VALID;
 }
+
+int create_generate_chain(MoveInfo *main_move,Board *board, Board *generate_board) {
+	MoveList *generate_chain;
+	MoveInfo new_move;
+	int r = 0, c = 0, new_val = UNASSIGNED;
+
+	if (create_empty_chain(&generate_chain) != VALID) {
+		printf("Error: couldn't init generate chain\n");
+		return NOT_VALID;
+	}
+	main_move->subchain = generate_chain;
+
+	for (c = 0; c < board->n; c++) {
+		for (r = 0; r < board->n; r++) {
+			new_val = generate_board->game_table[r][c].val;
+			if (board->game_table[r][c].val != new_val) {
+				create_new_move(board, &new_move, r, c, new_val);
+				if (append_new_move_to_moves_list(generate_chain, new_move) !=
+						VALID) {
+					printf("Error: couldn't append new move to generate chain\n");
+					return NOT_VALID;
+				}
+				generate_chain = generate_chain->next;
+			}
+		}
+	}
+	return VALID;
+}
+
+
 
 int remove_moves_from_begining(MoveList **chain) {
 	MoveList *start;
