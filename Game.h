@@ -112,4 +112,6 @@ int play_undo(Board *board, Game *game);
 int play_redo(Board *board, Game *game);
 
 int play_reset(Board *board, Game *game);
+
+int play_validate(Board *board, int to_print);
 #endif /* GAME_H_ */

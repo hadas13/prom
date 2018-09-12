@@ -636,18 +636,18 @@ int play_generate(Game *game, Board *board, int cells_to_fill, int cells_to_keep
 	return NOT_VALID;
 }
 
-int play_validate(Board *board) {
+int play_validate(Board *board, int to_print) {
 	if (board->num_err != 0) {
-		print_errorneous_err();
+		if (to_print == 1){print_errorneous_err();}
 		return NOT_VALID;
 	}
 
 	if (run_ILP(board, RUN_VALIDATE, 0, 0) == NOT_VALID) {
-		print_validation_failed();
+		if(to_print == 1){print_validation_failed();}
 		return NOT_VALID;
 	}
 	else{
-		print_validation_passed();
+		if(to_print == 1){print_validation_passed();}
 		return VALID;
 	}
 	return VALID;
@@ -958,7 +958,7 @@ void play(){
 				case SET:
 					play_set(command, board, &game);
 					if (board->filled == board->n * board->n){ /* board is full */
-						if(play_validate(board)){
+						if(play_validate(board, FALSE)){
 							/* validation passed */
 							printf("Puzzle solved successfully\n");
 							game.game_mode = INIT_MODE;
@@ -969,7 +969,7 @@ void play(){
 					}
 					break;
 				case VALIDATE:
-					play_validate(board);
+					play_validate(board, TRUE);
 					break;
 				case UNDO:
 					play_undo(board, &game);
@@ -990,7 +990,7 @@ void play(){
 				case AUTOFILL:
 					play_autofill(&board, &game, TRUE);
 					if (board->filled == board->n * board->n){ /* board is full */
-						if(play_validate(board)){
+						if(play_validate(board, FALSE)){
 							/* validation passed */
 							printf("Puzzle solved successfully\n");
 							game.game_mode = INIT_MODE;
@@ -1032,7 +1032,7 @@ void play(){
 					play_generate(&game, board, command.X, command.Y);
 					break;
 				case VALIDATE:
-					play_validate(board);
+					play_validate(board, TRUE);
 					break;
 				case UNDO:
 					play_undo(board, &game);
