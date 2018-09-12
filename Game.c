@@ -796,6 +796,7 @@ int play_solve(Board *board, char *path, Game *game){
 		return NOT_VALID;
 	}
 	game->game_mode = SOLVE_MODE;
+	print_board(board, game->mark_err, game);
 	return VALID;
 }
 
@@ -822,6 +823,7 @@ int play_edit(Board *board, char *path, Game *game){
 			return NOT_VALID;
 		}
 		game->game_mode = EDIT_MODE;
+		print_board(board, 1, game);
 		return VALID;
 	}
 	else if(read_sudoku(path, board, FALSE) == NOT_VALID){ /* reading the file failed */
@@ -833,6 +835,7 @@ int play_edit(Board *board, char *path, Game *game){
 			return NOT_VALID;
 		}
 		game->game_mode = EDIT_MODE;
+		print_board(board, 1, game);
 		return VALID;
 	}
 }
