@@ -345,7 +345,7 @@ Board *autofill(Board *board, Game *game, int to_print, MoveList **chain) {
 					if (is_something_changed == FALSE) {
 						/* first time that something changed in the board */
 						is_something_changed = TRUE;
-						if (create_autofill_chain(&autofill_changes) != VALID) {
+						if (create_empty_chain(&autofill_changes) != VALID) {
 							printf("Error: couldn't init move list for autofill\n");
 							return NULL;
 						}
@@ -601,33 +601,48 @@ int play_generate(Game *game, Board *board, int cells_to_fill, int cells_to_keep
 	int cells_to_remove = board->n * board->n - cells_to_keep;
 	MoveInfo move;
 
- 	if (check_generate_valid(board, cells_to_fill, cells_to_keep) == NOT_VALID) {
- 		return NOT_VALID;
+	if (check_generate_valid(board, cells_to_fill, cells_to_keep) == NOT_VALID) {
+		return NOT_VALID;
 	}
 
- 	init_empty_game_move_info(&move);
- 	for (iter = 0; iter < MAX_ITER_GENERATE; iter++) {
- 		if (copy_board(board->game_table, iter_board->game_table, board->n) != VALID) {
- 			printf("Error: couldn't copy to iter board - generate\n");
- 			return NOT_VALID;
- 		}
- 		if ((fill_x_empty_cells(iter_board, cells_to_fill) == VALID)) {
- 		/*if ((fill_x_empty_cells(iter_board, x) == VALID) && */
- 			/*run_ILP(board, RUN_GENERATE)) {*/
+	init_empty_game_move_info(&move);
+	for (iter = 0; iter < MAX_ITER_GENERATE; iter++) {
+		iter_board = init_board(board->n, board->m_rows, board->m_cols, board->filled);
+		if (copy_board(board->game_table, iter_board->game_table, board->n) != VALID) {
+			printf("Error: couldn't copy to iter board - generate\n");
+			return NOT_VALID;
+		}
+		if ((fill_x_empty_cells(iter_board, cells_to_fill) == VALID)) {
+			/*TODO - check if run_ILP returns VALID if the board is solvable */
+		/*if ((fill_x_empty_cells(iter_board, x) == VALID) && */
+			/*run_ILP(board, RUN_GENERATE)) {*/
 			/* generated full board */
-
+			
 			update_errors_on_board(iter_board);
-			remove_num_cells(iter_board, cells_to_remove);
-			/*if (create_generate_chain(board, iter_board, move) != VALID) {*/
-				/*printf("Error: couldn't create chain of generate moves\n");*/
-				/*return NOT_VALID;*/
-			/*}*/
+			if (remove_num_cells(iter_board, cells_to_remove) != VALID) {
+				printf("Error: couldn't remove %d cells\n", cells_to_remove);
+				return NOT_VALID;
+			}
+			if (create_generate_chain(&move, board, iter_board) != VALID) {
+				printf("Error: couldn't create chain of generate moves\n");
+				return NOT_VALID;
+			}
+
+			if (append_new_move_to_moves_list(game->curr_move, move) != VALID) {
+				printf("Error: couldn't add generate move to chain of game\n");
+				return NOT_VALID;
+			}
+
+			game->curr_move = game->curr_move->next;
+			copy_board(iter_board->game_table, board->game_table, board->n);
+			free_board(iter_board);
 			print_board(board, game->mark_err, game);
 			free(x_cells_arr);
 			return VALID;
 		}
 
-		clean_vals_from_board(board);
+		free_board(iter_board);
+		/*clean_vals_from_board(board);*/
 	}
 
 	print_err_generator_failed();
