@@ -981,6 +981,16 @@ void play(){
 					break;
 				case AUTOFILL:
 					play_autofill(&board, &game, TRUE);
+					if (board->filled == board->n * board->n){ /* board is full */
+						if(play_validate(board)){
+							/* validation passed */
+							printf("Puzzle solved successfully\n");
+							game.game_mode = INIT_MODE;
+						}
+						else{ /* validation failed */
+							printf("Puzzle solution erroneous\n");
+						}
+					}
 					break;
 				case RESET:
 					play_reset(board, &game);
