@@ -85,8 +85,9 @@ int free_game(Game *game);
 
 /*
  * function that receives a path to a sudoku file and a board and reads the sudoku from the file to the board
+ * in addition, it receives an indication if it need to pay attention to fixed cells (SOLVE) or not (EDIT)
  */
-int read_sudoku(char *path, Board *board);
+int read_sudoku(char *path, Board *board, int use_fixed);
 
 /*
  * function the receives a board and a file path and loads the sudoku in the file to play in solve mode.

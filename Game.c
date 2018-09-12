@@ -706,7 +706,7 @@ int play_redo(Board *board, Game *game) {
  	return VALID;
 }
 
-int read_sudoku(char *path, Board *board){
+int read_sudoku(char *path, Board *board, int use_fixed){
 	int row, col, n, count;
 	FILE *input;
 	char read[2] = {'\0', '\0'};
@@ -739,6 +739,7 @@ int read_sudoku(char *path, Board *board){
 		col = 0;
 		while(col < n){ /* go over columns */
 			board->game_table[row][col].is_err = 0;
+			board->game_table[row][col].is_fixed = 0;
 			if(!isspace(read[0] = fgetc(input))){ /* found a value or a dot */
 				if (read[0] != '.'){ /* found a value or first digit of the value of a cell */
 					board->game_table[row][col].val = string_to_int(read);
@@ -746,28 +747,32 @@ int read_sudoku(char *path, Board *board){
 						count += 1;
 					}
 					if (isspace(read[0] = fgetc(input))){ /* unfixed value */
-						board->game_table[row][col].is_fixed = 0;
 						col += 1;
 					}
 					else if (read[0] != '.'){ /* double digit value in the cell */
 						board->game_table[row][col].val *= 10;
 						board->game_table[row][col].val += string_to_int(read);
 						if (isspace(read[0] = fgetc(input))){ /* unfixed value of double digit */
-							board->game_table[row][col].is_fixed = 0;
 							col += 1;
 						}
 						else{ /* fixed double digit value */
-							board->game_table[row][col].is_fixed = 1;
+							if (use_fixed){ /* fixed is relevant only in SOLVE MODE */
+								board->game_table[row][col].is_fixed = 1;
+							}
 							col += 1;
 						}
 					}
 					else{ /* a dot of a fixed cell */
-						board->game_table[row][col].is_fixed = 1;
+						if (use_fixed){ /* fixed is relevant only in SOLVE MODE */
+							board->game_table[row][col].is_fixed = 1;
+						}
 						col += 1;
 					}
 				}
 				else{ /* a fixed cell */
-					board->game_table[row][col].is_fixed = 1;
+					if (use_fixed){ /* fixed is relevant only in SOLVE MODE */
+						board->game_table[row][col].is_fixed = 1;
+					}
 					col += 1;
 				}
 			}
@@ -782,7 +787,7 @@ int read_sudoku(char *path, Board *board){
 }
 
 int play_solve(Board *board, char *path, Game *game){
-	if (read_sudoku(path, board) == NOT_VALID){ /* trouble opening the file */
+	if (read_sudoku(path, board, TRUE) == NOT_VALID){ /* trouble opening the file */
 		printf("Error: File doesn't exist or cannot be opened\n");
 		return NOT_VALID;
 	}
@@ -819,7 +824,7 @@ int play_edit(Board *board, char *path, Game *game){
 		game->game_mode = EDIT_MODE;
 		return VALID;
 	}
-	else if(read_sudoku(path, board) == NOT_VALID){ /* reading the file failed */
+	else if(read_sudoku(path, board, FALSE) == NOT_VALID){ /* reading the file failed */
 		printf("Error: File cannot be opened\n");
 		return NOT_VALID;
 	}
