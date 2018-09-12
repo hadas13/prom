@@ -13,12 +13,12 @@
 #include "ILP.h"
 #include "MainAux.h"
 
-
 #define MAX_ITER_GENERATE 1000 /* iterations num of generating x numbers in generate command */
 #define NOT_POSSIBLE_VAL -1
-#define FINISHED_UNDO     3
+#define FINISHED_UNDO 3
 
-/****** functions ********/
+ /****** functions ********/
+
 /*
  * Function that receives a struct containing the board game and its dimensions
  * and prints the a line of "-" that frames the board
@@ -42,8 +42,8 @@ int init_game_table(Board *board);
  * @param fixed_nums: number of fixed cells.
  * @return value: new game board and solution. 
  */
-
 Board *init_board(int n, int m_rows, int m_cols, int fixed_nums);
+
 
 Game init_game();
 
@@ -69,7 +69,6 @@ void play();
  * the "set" action on the current board game. adding new move to game->curr_move list.
  * returns valid or not_valid.
  */
-
 int play_set(struct Command command, Board *board, Game *game);
 
 /*

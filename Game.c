@@ -1,5 +1,6 @@
 #include "Game.h"
 
+
 Cell init_cell() {
 	Cell init_cell;
 	init_cell.val = 1;
@@ -89,17 +90,6 @@ int count_num_of_filled_cells(Board *board) {
 	return cnt;
 }
 
-int stop_game(Board *board){
-	int stop;
-	if (board->filled > (board->n * board->n)){ /* indicate exit of restart commands */
-		stop = 1;
-	}
-	else{
-		stop = 0;
-	}
-	return (stop);
-}
-
 int play_mark_errors(Game *game, int is_mark) {
 	if (game->game_mode != SOLVE_MODE) {
 		print_err_invalid_command();
@@ -176,7 +166,7 @@ int filled_cell(Board *board, Game *game, int col, int row, int val) {
 		board->game_table[row][col].is_err = FALSE;
 	}
 
-       	else {
+    else {
 		is_valid = is_cell_valid(board, board->game_table, val, row, col);
 		if (!is_valid) {
 			/* inserting error value */
@@ -314,11 +304,13 @@ int check_and_change_one_sol_cell(Cell **checking_board, int row, int col, Board
 	free(num_opt);
 	return changed;
 }
-
+	
 int check_autofill_param(Board *board) {
+
 	if (board == NULL){
 		return NOT_VALID;
 	}
+
 	else if (update_errors_on_board(board) != VALID) {
 		printf("Error: failed updating errors on board - autofill\n");
 		return NOT_VALID;
@@ -330,7 +322,6 @@ int check_autofill_param(Board *board) {
 
 	return VALID;
 }
-
 Board *autofill(Board *board, Game *game, int to_print, MoveList **chain) {
 	int r, c;
 	int is_something_changed = FALSE;
@@ -373,7 +364,6 @@ Board *autofill(Board *board, Game *game, int to_print, MoveList **chain) {
 						c + 1, r + 1, changed);
 					}
 				}
-				/* didn't changed */
 			}
 		}
 	}
@@ -402,6 +392,7 @@ int play_autofill(Board **board, Game *game, int to_print) {
 	print_board(*board, game->mark_err);
 	return VALID;
 }
+
 
 int play_num_solutions(Board *board) {
 	int num_sol = 0;
@@ -439,6 +430,7 @@ int play_save(Board *board, Game *game, char *path) {
 			return NOT_VALID;
 		}
 	}
+
 	fd = fopen(path, "w");
 
 	if (fd == NULL) {
@@ -464,7 +456,6 @@ int check_generate_valid(Board *board, int x, int y) {
 
  	if (num_filled_cells != 0) {
  		print_err_board_not_empty();
-
 		return NOT_VALID;
 	}
 
@@ -597,9 +588,11 @@ int remove_num_cells(Board *board, int num) {
 			board->game_table[rand_row][rand_col].is_fixed = FALSE;
 			num -= 1;
 		}
+
 	}
 	return VALID;
 }
+
 
 int play_generate(Game *game, Board *board, int cells_to_fill, int cells_to_keep){
 	Board *iter_board = NULL;
@@ -657,7 +650,8 @@ int play_validate(Board *board) {
 		print_validation_passed();
 		return VALID;
 	}
-	return VALID;}
+	return VALID;
+}
 
 int free_game(Game *game) {
  	if (remove_moves_from_begining(&(game->curr_move)) != VALID) {
@@ -792,7 +786,8 @@ int play_solve(Board *board, char *path, Game *game){
 		printf("Error: File doesn't exist or cannot be opened\n");
 		return NOT_VALID;
 	}
-	if (remove_moves_from_begining(&(game->curr_move)) != VALID) {
+
+	if (remove_moves_from_begining(&(game->curr_move)) != VALID){
 		return NOT_VALID;
 	}
 	game->game_mode = SOLVE_MODE;
@@ -818,8 +813,8 @@ int play_edit(Board *board, char *path, Game *game){
 				board->game_table[row][col].is_err = 0;
 			}
 		}
-		if (remove_moves_from_begining(&(game->curr_move)) != VALID) {
-		return NOT_VALID;
+		if (remove_moves_from_begining(&(game->curr_move)) != VALID){
+			return NOT_VALID;
 		}
 		game->game_mode = EDIT_MODE;
 		return VALID;
@@ -829,7 +824,7 @@ int play_edit(Board *board, char *path, Game *game){
 		return NOT_VALID;
 	}
 	else{ /* sudoku updated from file */
-		if (remove_moves_from_begining(&(game->curr_move)) != VALID) {
+		if (remove_moves_from_begining(&(game->curr_move)) != VALID){
 			return NOT_VALID;
 		}
 		game->game_mode = EDIT_MODE;
@@ -844,11 +839,46 @@ int play_exit(Board *board, Game *game){
 	return VALID;
 }
 
+int play_all_undo(Board *board, Game *game, MoveInfo *undo_move) {
+	while (game->curr_move->prev != NULL) {
+		*undo_move = game->curr_move->move;
+		if (undo_on_board(board, game->curr_move->move) != VALID) {
+			printf("Error: couldn't make undo on board\n");
+			return NOT_VALID;
+		}
+
+		game->curr_move = game->curr_move->prev;
+
+	}
+
+	return FINISHED_UNDO;
+
+}
+
+int play_reset(Board *board, Game *game) {
+	MoveInfo move;
+
+	init_empty_game_move_info(&move);
+	if (play_all_undo(board, game, &move) != FINISHED_UNDO) {
+		printf("Error: while play_reset, can't play undo\n");;
+		return NOT_VALID;
+	}
+
+	if (remove_next_moves(game->curr_move) != VALID) {
+		printf("Error: couldn't remove moves from this point in play_reset\n");
+		return NOT_VALID;
+	}
+
+	print_board_reset();
+	return VALID;
+}
+
 void play(){
 	Game game;
 	Board *board;
 	MoveList initial_move;
 	struct Command command;
+/*	int row, col;*/
 
 	/* initializing the game */
 	game.game_mode = INIT_MODE;
@@ -888,6 +918,15 @@ void play(){
 			}
 		}
 		else if(game.game_mode == SOLVE_MODE){ /* solve mode */
+			/* TODO CHECKINGS
+			for(row = 0; row < board->n; row++){
+				for (col = 0; col < board->n; col++){
+					printf("cell <%d,%d,%d> is error %d\n", row+1, col+1, board->game_table[row][col].val, board->game_table[row][col].is_err);
+				}
+			}
+			printf("board errors %d\n", board->num_err);
+			 TODO CHECKINGS */
+
 			switch (command.command){
 				case SOLVE:
 					play_solve(board, command.path, &game);
@@ -908,7 +947,6 @@ void play(){
 					break;
 				case SET:
 					play_set(command, board, &game);
-					print_board(board, game.mark_err); /* TODO - not sure if it suppose to be here */
 					if (board->filled == board->n * board->n){ /* board is full */
 						if(play_validate(board)){
 							/* validation passed */
@@ -942,8 +980,8 @@ void play(){
 				case AUTOFILL:
 					play_autofill(&board, &game, TRUE);
 					break;
-				case RESET: /* TODO check what about this part */
-					printf("play reset\n");
+				case RESET:
+					play_reset(board, &game);
 					break;
 				default:
 					printf("Error: invalid command\n");
@@ -988,8 +1026,8 @@ void play(){
 				case NUM_SOLUTIONS:
 					play_num_solutions(board);
 					break;
-				case RESET: /* TODO check what about this part */
-					printf("play reset\n");
+				case RESET:
+					play_reset(board, &game);
 					break;
 				default:
 					printf("Error: invalid command\n");
@@ -999,38 +1037,4 @@ void play(){
 	}
 
 	free_board(board);
-}
-
-int play_all_undo(Board *board, Game *game, MoveInfo *undo_move) {
-	while (game->curr_move->prev != NULL) {
-		*undo_move = game->curr_move->move;
-		if (undo_on_board(board, game->curr_move->move) != VALID) {
-			printf("Error: couldn't make undo on board\n");
-			return NOT_VALID;
-		}
-
-		game->curr_move = game->curr_move->prev;
-
-	}
-
-	return FINISHED_UNDO;
-	
-}
-
-int play_reset(Board *board, Game *game) {
-	MoveInfo move;
-
-	init_empty_game_move_info(&move);
-	if (play_all_undo(board, game, &move) != FINISHED_UNDO) {
-		printf("Error: while play_reset, can't play undo\n");;
-		return NOT_VALID;
-	}
-
-	if (remove_next_moves(game->curr_move) != VALID) {
-		printf("Error: couldn't remove moves from this point in play_reset\n");
-		return NOT_VALID;
-	}
-
-	print_board_reset();
-	return VALID;
 }

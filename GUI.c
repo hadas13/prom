@@ -49,13 +49,11 @@ int print_board_contains_error() {
 	printf("Error: board contains errorneous values\n");
 	return VALID;
 }
-
 /* TODO need to check what to print here, I just added it for compilation */
 int print_err_board_validate_failed(){
 	printf("Error: board validation failed\n");
 	return VALID;
 }
-
 
 void print_frame(Board *board){
 	/* prints "-" according to number of cells in block */
@@ -161,8 +159,8 @@ int print_undo_move(MoveInfo move) {
 				move.val_before != EMPTY_VALUE_FOR_INIT ||
 				move.val_after != EMPTY_VALUE_FOR_INIT) {
 			/* not a subchain of moves */
-			printf("Undo %d,%d: from ", move.col, move.row);
-			if (move.val_after == UNASSIGNED) {
+		printf("Undo %d,%d: from ", move.col, move.row);
+		if (move.val_after == UNASSIGNED) {
 				printf("_ to ");
 			} else {
 				printf("%d to ", move.val_after);
