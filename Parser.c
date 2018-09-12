@@ -99,6 +99,7 @@ void get_args(struct Command *command, char *tokens){
 			command->valid = 1;
 		}
 		else if (command->command == EDIT){
+			clear_path(command->path);
 			command->valid = 1;
 		}
 		else{

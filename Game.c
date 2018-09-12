@@ -797,7 +797,7 @@ int play_solve(Board *board, char *path, Game *game){
 int play_edit(Board *board, char *path, Game *game){
 	int col, row, n;
 
-	if (path == NULL){ /* path wasn't provided */
+	if (path == NULL || path[0] == '\0'){ /* path wasn't provided */
 		free_matrix(board->game_table, board->n); /* clean old board */
 		board->m_cols = 3;
 		board->m_rows = 3;
@@ -909,7 +909,6 @@ void play(){
 				break;
 			case EDIT:
 				play_edit(board, command.path, &game);
-				clear_path(command.path);
 				break;
 			case EXIT:
 				play_exit(board, &game);
@@ -938,7 +937,6 @@ void play(){
 					break;
 				case EDIT:
 					play_edit(board, command.path, &game);
-					clear_path(command.path);
 					break;
 				case EXIT:
 					play_exit(board, &game);
@@ -1002,7 +1000,6 @@ void play(){
 					break;
 				case EDIT:
 					play_edit(board, command.path, &game);
-					clear_path(command.path);
 					break;
 				case EXIT:
 					play_exit(board, &game);
