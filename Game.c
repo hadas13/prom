@@ -905,6 +905,8 @@ void play(){
 				play_solve(board, command.path, &game);
 				clear_path(command.path);
 				break;
+			case BLANK_LINE:
+				break;
 			case EDIT:
 				play_edit(board, command.path, &game);
 				clear_path(command.path);
@@ -931,6 +933,8 @@ void play(){
 				case SOLVE:
 					play_solve(board, command.path, &game);
 					clear_path(command.path);
+					break;
+				case BLANK_LINE:
 					break;
 				case EDIT:
 					play_edit(board, command.path, &game);
@@ -993,6 +997,8 @@ void play(){
 				case SOLVE:
 					play_solve(board, command.path, &game);
 					clear_path(command.path);
+					break;
+				case BLANK_LINE:
 					break;
 				case EDIT:
 					play_edit(board, command.path, &game);
