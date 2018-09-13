@@ -1,13 +1,22 @@
+/*
+ * a source file that includes auxiliary functions
+ */
+
 #include <stdlib.h>
 #include "MainAux.h"
 
-
+/*
+ * a function that receives a numeric string and converts it to int
+ */
 int string_to_int(char *string){
 	char *end;
 	int num = strtol(string, &end, 10);
 	return (num);
 }
 
+/*
+ * a function that checks if a string is numeric
+ */
 int is_numeric_string(char *string){
 	int i = 0;
 	int numeric = 1;
@@ -58,6 +67,9 @@ int clean_vals_from_board(Board *board) {
 	return VALID;
 }
 
+/*
+ * a function that receives a char array and puts its elements to \0
+ */
 void clear_path(char *path){
 	int i = 0;
 	for (; i < 256; i++){
