@@ -1,8 +1,13 @@
+/*
+ * a source file that includes the methods that run the Gurobi ILP optimizer
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "gurobi_c.h"
 #include "defines.h"
+
 
 int run_ILP(Board *board, int command_index, int row, int col){
 	/* game parameters */
@@ -217,6 +222,7 @@ int run_ILP(Board *board, int command_index, int row, int col){
 				}
 			}
 		}
+
 		free(ind);
 		free(val);
 		free(low);

@@ -1,8 +1,5 @@
 /*
- * ILP.h
- *
- *  Created on: 29 баев„ 2018
- *      Author: Omer
+ * a header file that represents the methods of the Gurobi ILP optimizer
  */
 
 #ifndef ILP_H_
