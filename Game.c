@@ -1,6 +1,8 @@
 #include "Game.h"
 
-
+/*
+ * function that initiates a cell struct
+ */
 Cell init_cell() {
 	Cell init_cell;
 	init_cell.val = 1;
@@ -10,6 +12,9 @@ Cell init_cell() {
 	return init_cell;
 }
 
+/*
+ * function that receives a board struct and initiates its game_table according to the board's parameters
+ */
 int init_game_table(Board *board){
  	int i = 0, r = 0, c = 0;
  	int n = board->n;
@@ -39,7 +44,9 @@ int init_game_table(Board *board){
 	return VALID;
 }
 
-
+/*
+ * function that receives board parameters and initiates a board struct accordingly
+ */
 Board *init_board(int n, int m_rows, int m_cols, int filled) {
 	Board *board = NULL;
 
@@ -64,20 +71,9 @@ Board *init_board(int n, int m_rows, int m_cols, int filled) {
 	return board;
 }
 
-Game init_game(){
-	Game game;
-	MoveList initial_move;
-
-	game.game_mode = INIT_MODE;
-	game.mark_err = TRUE;
-	init_empty_game_move_info(&(initial_move.move));
-	initial_move.next = NULL;
-	initial_move.prev = NULL;
-	game.curr_move = &initial_move;
-
-	return game;
-}
-
+/*
+ * function that receives a board struct and count the number of filled cells in the board
+ */
 int count_num_of_filled_cells(Board *board) {
 	int cnt = 0, row = 0, col = 0;
 	for (row = 0; row < board->n; row++) {
@@ -90,6 +86,9 @@ int count_num_of_filled_cells(Board *board) {
 	return cnt;
 }
 
+/*
+ * function that plays the mark errors command
+ */
 int play_mark_errors(Game *game, int is_mark) {
 	if (game->game_mode != SOLVE_MODE) {
 		print_err_invalid_command();
@@ -105,6 +104,9 @@ int play_mark_errors(Game *game, int is_mark) {
 	return VALID;
 }
 
+/*
+ * function that receives indexes of row and col and a size of a board and checks if the row and col are legal for the board
+ */
 int is_row_col_param_valid(int N, int X, int Y) {
 	if (X < 1 || X > N || Y < 1 || Y > N) {
 		return NOT_VALID;
@@ -113,6 +115,10 @@ int is_row_col_param_valid(int N, int X, int Y) {
 	return VALID;
 }
 
+/*
+ * function that receives the numeric parameters of an input set command and checks
+ * if they are legal for the current game
+ */
 int is_set_param_valid(int N, int X, int Y, int Z) {
 	if (!is_row_col_param_valid(N, X, Y)) {
 		return NOT_VALID;
@@ -124,6 +130,9 @@ int is_set_param_valid(int N, int X, int Y, int Z) {
 	return VALID;
 }
 
+/*
+ * function that goes over a board and marks each cell as erroneous or not according to sudoku rules
+ */
 int update_errors_on_board(Board *board) {
 	int n = board->n;
 	int is_err = FALSE;
@@ -194,6 +203,9 @@ int filled_cell(Board *board, Game *game, int col, int row, int val) {
 	return VALID;
 }
 
+/*
+ * function that plays the set command
+ */
 int play_set(struct Command command, Board *board, Game *game){
 	int row = 0, col = 0, value = 0;
 	MoveInfo new_move;
@@ -229,6 +241,9 @@ int play_set(struct Command command, Board *board, Game *game){
 	return VALID;
 }
 
+/*
+ * function that plays the hint command
+ */
 int play_hint(struct Command command, Board *board){
 	int X = command.X;
 	int Y = command.Y;
@@ -304,7 +319,10 @@ int check_and_change_one_sol_cell(Cell **checking_board, int row, int col, Board
 	free(num_opt);
 	return changed;
 }
-	
+
+/*
+ * function that checks if the board is eligible for an autofill command
+ */
 int check_autofill_param(Board *board) {
 
 	if (board == NULL){
@@ -322,6 +340,7 @@ int check_autofill_param(Board *board) {
 
 	return VALID;
 }
+
 Board *autofill(Board *board, Game *game, int to_print, MoveList **chain) {
 	int r, c;
 	int is_something_changed = FALSE;
@@ -378,6 +397,9 @@ Board *autofill(Board *board, Game *game, int to_print, MoveList **chain) {
 	return new_board;
 }
 
+/*
+ * function that plays the autofill command
+ */
 int play_autofill(Board **board, Game *game, int to_print) {
 	MoveList *chain;
 
@@ -393,7 +415,9 @@ int play_autofill(Board **board, Game *game, int to_print) {
 	return VALID;
 }
 
-
+/*
+ * function that plays the num solutions command
+ */
 int play_num_solutions(Board *board) {
 	int num_sol = 0;
 
@@ -416,6 +440,9 @@ int play_num_solutions(Board *board) {
 	return VALID;
 }
 
+/*
+ * function that plays the save command
+ */
 int play_save(Board *board, Game *game, char *path) {
 	FILE *fd;
 	int is_save = FALSE;
@@ -536,6 +563,9 @@ int update_board_with_cells_arr(Cell_Item *arr, Board *board, int num_cells) {
 	return VALID;
 }
 
+/*
+ * function that receives a pointer to a board struct and an int X and fills the (empty) board to have exactly X filled cells
+ */
 int fill_x_empty_cells(Board *board, int x) {
 	Cell_Item *x_cells_arr = NULL;
 	int n = board->n;
@@ -577,6 +607,9 @@ int fill_x_empty_cells(Board *board, int x) {
 	return VALID;
 }
 
+/*
+ * function that recieves a pointer to a board struct and an int num and clears num cells from the board
+ */
 int remove_num_cells(Board *board, int num) {
 	int rand_row = 0, rand_col = 0;
 	while (num > 0) {
@@ -593,7 +626,9 @@ int remove_num_cells(Board *board, int num) {
 	return VALID;
 }
 
-
+/*
+ * function that plays the generate command
+ */
 int play_generate(Game *game, Board *board, int cells_to_fill, int cells_to_keep){
 	Board *iter_board = NULL;
 	Cell_Item *x_cells_arr = NULL;
@@ -648,6 +683,9 @@ int play_generate(Game *game, Board *board, int cells_to_fill, int cells_to_keep
 	return NOT_VALID;
 }
 
+/*
+ * function that plays the validate command
+ */
 int play_validate(Board *board, int to_print) {
 	if (board->num_err != 0) {
 		if (to_print == 1){print_errorneous_err();}
@@ -665,6 +703,9 @@ int play_validate(Board *board, int to_print) {
 	return VALID;
 }
 
+/*
+ * function that free the memory allocated for a game struct
+ */
 int free_game(Game *game) {
  	if (remove_moves_from_begining(&(game->curr_move)) != VALID) {
  		return NOT_VALID;
@@ -673,6 +714,9 @@ int free_game(Game *game) {
 	return VALID;
 }
 
+/*
+ * function that plays the undo command
+ */
 int play_undo(Board *board, Game *game) {
 	MoveInfo move_to_change;
 	init_empty_game_move_info(&move_to_change);
@@ -696,6 +740,9 @@ int play_undo(Board *board, Game *game) {
 	return VALID;
 }
 
+/*
+ * function that plays the redo command
+ */
 int play_redo(Board *board, Game *game) {
 	MoveInfo move_to_change;
 	init_empty_game_move_info(&move_to_change);
@@ -718,6 +765,10 @@ int play_redo(Board *board, Game *game) {
  	return VALID;
 }
 
+/*
+ * function that receives a string, pointer to a board struct and an indication use_fixed and reads a sudoku from a file
+ * who's path is the input string into the board struct. according to use_fixed indicator, mark cells as fixed or not
+ */
 int read_sudoku(char *path, Board *board, int use_fixed){
 	int row, col, n, count;
 	FILE *input;
@@ -798,6 +849,9 @@ int read_sudoku(char *path, Board *board, int use_fixed){
 	return VALID;
 }
 
+/*
+ * function that plays the solve command
+ */
 int play_solve(Board *board, char *path, Game *game){
 	if (read_sudoku(path, board, TRUE) == NOT_VALID){ /* trouble opening the file */
 		printf("Error: File doesn't exist or cannot be opened\n");
@@ -812,6 +866,9 @@ int play_solve(Board *board, char *path, Game *game){
 	return VALID;
 }
 
+/*
+ * function that plays the edit command
+ */
 int play_edit(Board *board, char *path, Game *game){
 	int col, row, n;
 
@@ -852,6 +909,9 @@ int play_edit(Board *board, char *path, Game *game){
 	}
 }
 
+/*
+ * function that plays the exit command
+ */
 int play_exit(Board *board, Game *game){
 	free_game(game);
 	free_board(board);
@@ -875,6 +935,9 @@ int play_all_undo(Board *board, Game *game, MoveInfo *undo_move) {
 
 }
 
+/*
+ * function that plays the reset command
+ */
 int play_reset(Board *board, Game *game) {
 	MoveInfo move;
 
@@ -893,6 +956,26 @@ int play_reset(Board *board, Game *game) {
 	return VALID;
 }
 
+/*
+ * function that checks if the game is solved and prints content accordingly
+ */
+void check_win(Board *board, Game *game){
+	if (board->filled == board->n * board->n){ /* board is full */
+		if(play_validate(board, FALSE)){
+			/* validation passed */
+			printf("Puzzle solved successfully\n");
+			game->game_mode = INIT_MODE;
+		}
+		else{ /* validation failed */
+			printf("Puzzle solution erroneous\n");
+		}
+	}
+}
+
+/*
+ * function that manages the game, generates the game, board and command structs and plays each turn according
+ * to the input commands from the user
+ */
 void play(){
 	Game game;
 	Board *board;
@@ -959,16 +1042,7 @@ void play(){
 					break;
 				case SET:
 					play_set(command, board, &game);
-					if (board->filled == board->n * board->n){ /* board is full */
-						if(play_validate(board, FALSE)){
-							/* validation passed */
-							printf("Puzzle solved successfully\n");
-							game.game_mode = INIT_MODE;
-						}
-						else{ /* validation failed */
-							printf("Puzzle solution erroneous\n");
-						}
-					}
+					check_win(board, &game);
 					break;
 				case VALIDATE:
 					play_validate(board, TRUE);
@@ -991,16 +1065,7 @@ void play(){
 					break;
 				case AUTOFILL:
 					play_autofill(&board, &game, TRUE);
-					if (board->filled == board->n * board->n){ /* board is full */
-						if(play_validate(board, FALSE)){
-							/* validation passed */
-							printf("Puzzle solved successfully\n");
-							game.game_mode = INIT_MODE;
-						}
-						else{ /* validation failed */
-							printf("Puzzle solution erroneous\n");
-						}
-					}
+					check_win(board, &game);
 					break;
 				case RESET:
 					play_reset(board, &game);

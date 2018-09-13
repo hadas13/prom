@@ -1,3 +1,8 @@
+/*
+ * a header file that includes methods that related to the logic of a sudoku game
+ * and the management of the different user command options
+ */
+
 #ifndef GAME_H_
 #define GAME_H_
 
@@ -37,18 +42,14 @@ int init_game_table(Board *board);
  */
 Board *init_board(int n, int m_rows, int m_cols, int fixed_nums);
 
-
-Game init_game();
-
 /*
- * Function that changes the is_mark in game sturct */
+ * Function that changes the is_mark in game sturct
+ */
 int play_mark_errors(Game *game, int is_mark);
 
 /*
- * Function that receives a Board structure and returns 1 if the player either asked to restart
- * or asked to exit, and 0 if the current games needs to continue
+ * a function that runs the game, creates all of its parameters and runs each turn according to uesr commands
  */
-
 void play();
 
 /*
@@ -66,21 +67,33 @@ int play_set(struct Command command, Board *board, Game *game);
 int play_hint(struct Command command, Board *board);
 
 /*
- * Function that receives the number of fixed cells from the player
+ * function that goes over the board and mark each cell as erroneous or valid according to sudoku rules
  */
-
-int get_fixed();
-
 int update_errors_on_board(Board *board);
 
+/*
+ * function that plays the autofill command. to_print indicated if additional info needs to be printed or not
+ */
 int play_autofill(Board **board, Game *game, int to_print);
 
+/*
+ * function that plays the save command and on success saves the current sudoku to a file who's path is char *path
+ */
 int play_save(Board *board, Game *game, char *path);
 
+/*
+ * function that plays the num solutions command
+ */
 int play_num_solutions(Board *board);
 
+/*
+ * function that plays the generate command
+ */
 int play_generate(Game *game, Board *board, int x, int y);
 
+/*
+ * function that recieves a pointer to the game struct and free all its allocated memory
+ */
 int free_game(Game *game);
 
 /*
@@ -101,17 +114,28 @@ int play_solve(Board *board, char *path, Game *game);
  */
 int play_edit(Board *board, char *path, Game *game);
 
-
 /*
  * function the frees all allocated memory and exits the game
  */
 int play_exit(Board *board, Game *game);
 
+/*
+ * function that plays the undo command
+ */
 int play_undo(Board *board, Game *game);
 
+/*
+ * function that plays the redo command
+ */
 int play_redo(Board *board, Game *game);
 
+/*
+ * function that plays the reset command
+ */
 int play_reset(Board *board, Game *game);
 
+/*
+ * function that plays the validate command
+ */
 int play_validate(Board *board, int to_print);
 #endif /* GAME_H_ */
