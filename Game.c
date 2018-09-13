@@ -601,23 +601,21 @@ int play_generate(Game *game, Board *board, int cells_to_fill, int cells_to_keep
 	int cells_to_remove = board->n * board->n - cells_to_keep;
 	MoveInfo move;
 
-	if (check_generate_valid(board, cells_to_fill, cells_to_keep) == NOT_VALID) {
-		return NOT_VALID;
+ 	if (check_generate_valid(board, cells_to_fill, cells_to_keep) == NOT_VALID) {
+ 		return NOT_VALID;
 	}
 
-	init_empty_game_move_info(&move);
-	for (iter = 0; iter < MAX_ITER_GENERATE; iter++) {
-		iter_board = init_board(board->n, board->m_rows, board->m_cols, board->filled);
-		if (copy_board(board->game_table, iter_board->game_table, board->n) != VALID) {
-			printf("Error: couldn't copy to iter board - generate\n");
-			return NOT_VALID;
-		}
-		if ((fill_x_empty_cells(iter_board, cells_to_fill) == VALID)) {
-			/*TODO - check if run_ILP returns VALID if the board is solvable */
-		/*if ((fill_x_empty_cells(iter_board, x) == VALID) && */
-			/*run_ILP(board, RUN_GENERATE)) {*/
+ 	init_empty_game_move_info(&move);
+ 	for (iter = 0; iter < MAX_ITER_GENERATE; iter++) {
+ 		iter_board = init_board(board->n, board->m_rows, board->m_cols, board->filled);
+ 		if (copy_board(board->game_table, iter_board->game_table, board->n) != VALID) {
+ 			printf("Error: couldn't copy to iter board - generate\n");
+ 			return NOT_VALID;
+ 		}
+ 		if ((fill_x_empty_cells(iter_board, cells_to_fill) == VALID) &&
+ 			run_ILP(iter_board, RUN_GENERATE, 0, 0) == VALID) {
 			/* generated full board */
-			
+
 			update_errors_on_board(iter_board);
 			if (remove_num_cells(iter_board, cells_to_remove) != VALID) {
 				printf("Error: couldn't remove %d cells\n", cells_to_remove);
@@ -640,9 +638,8 @@ int play_generate(Game *game, Board *board, int cells_to_fill, int cells_to_keep
 			free(x_cells_arr);
 			return VALID;
 		}
-
-		free_board(iter_board);
-		/*clean_vals_from_board(board);*/
+ 		free_board(iter_board);
+ 		/*clean_vals_from_board(board);*/
 	}
 
 	print_err_generator_failed();
