@@ -1,3 +1,7 @@
+/*
+ * an header file that includes the methods used to parse use commands
+ */
+
 #ifndef PARSER_H_
 #define PARSER_H_
 

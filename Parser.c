@@ -1,3 +1,7 @@
+/*
+ * an source file that includes the methods used to parse use commands
+ */
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -53,7 +57,7 @@ void get_args(struct Command *command, char *tokens){
 		if (tokens != NULL){ /* first arg */
 			if(is_numeric_string(tokens)){
 				command->X = string_to_int(tokens);
-				if (command->command != MARK_ERRORS){ /* set, generate of hint commands */
+				if (command->command != MARK_ERRORS){ /* set, generate or hint commands */
 					tokens = strtok(NULL, " \t\r\n");
 					if (tokens != NULL){ /* second arg */
 						if (is_numeric_string(tokens)){
@@ -63,7 +67,6 @@ void get_args(struct Command *command, char *tokens){
 								if (tokens != NULL){ /* third arg */
 									if (is_numeric_string(tokens)){
 										command->Z = string_to_int(tokens);
-										command->valid = 1;
 									}
 									else{
 										command->valid = 0;
@@ -73,7 +76,6 @@ void get_args(struct Command *command, char *tokens){
 									command->valid = 0;
 								}
 							}
-							command->valid = 1;
 						}
 						else{
 							command->valid = 0;
@@ -83,7 +85,6 @@ void get_args(struct Command *command, char *tokens){
 						command->valid = 0;
 					}
 				}
-				command->valid = 1;
 			}
 			else{
 				command->valid = 0;
@@ -96,11 +97,9 @@ void get_args(struct Command *command, char *tokens){
 	else{ /* get string arg for solve, edit or save commands */
 		if (tokens != NULL){
 			strcpy(command->path, tokens);
-			command->valid = 1;
 		}
 		else if (command->command == EDIT){
 			clear_path(command->path);
-			command->valid = 1;
 		}
 		else{
 			command->valid = 0;
@@ -112,12 +111,12 @@ struct Command get_command(){
 	struct Command com;
 	char command_line[Command_Size];
 	char *tokens;
+	com.valid = 1;
 
 	if (fgets(command_line, sizeof(command_line), stdin) == NULL){
 
 		if (feof(stdin)){ /* EOF received */
 				com.command = EXIT;
-				com.valid = 1;
 				return (com);
 		}
 		else{ /* error in fgets */
@@ -129,99 +128,73 @@ struct Command get_command(){
 			com.valid = 0;
 			return (com);
 	}
-
 	tokens = strtok(command_line, " \t\r\n");
-
 	if(tokens == NULL){
 		 /* blank line received */
 		com.command = BLANK_LINE;
-		com.valid = 1;
-		return (com);
 	}
 	else if(strcmp(tokens, SET_COM) == 0){ /* set command */
 		com.command = SET;
 		tokens = strtok(NULL, " \t\r\n");
 		get_args(&com, tokens);
-		return (com);
 	}
 	else if(strcmp(tokens, HINT_COM) == 0){ /* hint command */
 		com.command = HINT;
 		tokens = strtok(NULL, " \t\r\n");
 		get_args(&com, tokens);
-		return (com);
 	}
 	else if(strcmp(tokens, MARK_ERRORS_X_COM) == 0){ /* mark_errors command */
 		com.command = MARK_ERRORS;
 		tokens = strtok(NULL, " \t\r\n");
 		get_args(&com, tokens);
-		return (com);
 	}
 	else if(strcmp(tokens, GENERATE_X_Y_COM) == 0){ /* generate command */
 		com.command = GENERATE;
 		tokens = strtok(NULL, " \t\r\n");
 		get_args(&com, tokens);
-		return (com);
 	}
 	else if(strcmp(tokens, VALIDATE_COM) == 0){ /* validate command */
 		com.command = VALIDATE;
-		com.valid = 1;
 		return (com);
 	}
 	else if(strcmp(tokens, EXIT_COM) == 0){ /* exit command */
 		com.command = EXIT;
-		com.valid = 1;
-		return (com);
 	}
 	else if(strcmp(tokens, SOLVE_X_COM) == 0){ /* solve command */
 		com.command = SOLVE;
 		tokens = strtok(NULL, " \t\r\n");
 		get_args(&com, tokens);
-		return (com);
 	}
 	else if(strcmp(tokens, EDIT_X_COM) == 0){ /* edit command */
 		com.command = EDIT;
 		tokens = strtok(NULL, " \t\r\n");
 		get_args(&com, tokens);
-		return (com);
 	}
 	else if(strcmp(tokens, SAVE_COM) == 0){ /* save command */
 		com.command = SAVE;
 		tokens = strtok(NULL, " \t\r\n");
 		get_args(&com, tokens);
-		return (com);
 	}
 	else if(strcmp(tokens, PRINT_BOARD_COM) == 0){ /* print board command */
 		com.command = PRINT_BOARD;
-		com.valid = 1;
-		return (com);
 	}
 	else if(strcmp(tokens, UNDO_COM) == 0){ /* undo command */
 		com.command = UNDO;
-		com.valid = 1;
-		return (com);
 	}
 	else if(strcmp(tokens, REDO_COM) == 0){ /* redo command */
 		com.command = REDO;
-		com.valid = 1;
-		return (com);
 	}
 	else if(strcmp(tokens, NUM_SOLUTIONS_COM) == 0){ /* number of solutions command */
 		com.command = NUM_SOLUTIONS;
-		com.valid = 1;
-		return (com);
 	}
 	else if(strcmp(tokens, AUTOFILL_COM) == 0){ /* autofill command */
 		com.command = AUTOFILL;
-		com.valid = 1;
-		return (com);
 	}
 	else if(strcmp(tokens, RESET_COM) == 0){ /* reset command */
 		com.command = RESET;
-		com.valid = 1;
-		return (com);
 	}
 	else{ /* invalid command */
 		com.valid = 0;
-		return (com);
 	}
+	return (com);
 }
