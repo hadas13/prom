@@ -117,8 +117,8 @@ int print_err_is_mark_val() {
 	return VALID;
 }
 
- int print_err_value_not_in_range() {
-	 printf("Error: value not in range 0-N\n");
+ int print_err_value_not_in_range(int limit) {
+	 printf("Error: value not in range 0-%d\n", limit);
 	 return VALID;
  }
 

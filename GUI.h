@@ -34,7 +34,7 @@ void print_board(Board *board, int mark_err, Game *game);
 
 int print_err_is_mark_val();
 
-int print_err_value_not_in_range();
+int print_err_value_not_in_range(int limit);
 
 int print_err_cell_is_fixed();
 

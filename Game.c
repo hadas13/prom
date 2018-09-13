@@ -204,7 +204,7 @@ int play_set(struct Command command, Board *board, Game *game){
 	init_empty_game_move_info(&new_move);
 
  	if (!is_set_param_valid(board->n, col + 1, row + 1, value)) {
- 		print_err_value_not_in_range();
+ 		print_err_value_not_in_range(board->n);
 		return NOT_VALID;
 	}
 	
@@ -525,7 +525,7 @@ int update_board_with_cells_arr(Cell_Item *arr, Board *board, int num_cells) {
 		/* update board */
 		board->game_table[r][c].val = val;
 		board->game_table[r][c].is_err = FALSE;
-		board->game_table[r][c].is_fixed = FALSE; /* TODO check if it suppuse to be fixed or not */
+		board->game_table[r][c].is_fixed = FALSE;
 	}
 
 	update_errors_on_board(board);
@@ -898,7 +898,6 @@ void play(){
 	Board *board;
 	MoveList initial_move;
 	struct Command command;
-/*	int row, col;*/
 
 	/* initializing the game */
 	game.game_mode = INIT_MODE;
@@ -939,15 +938,6 @@ void play(){
 			}
 		}
 		else if(game.game_mode == SOLVE_MODE){ /* solve mode */
-			/* TODO CHECKINGS
-			for(row = 0; row < board->n; row++){
-				for (col = 0; col < board->n; col++){
-					printf("cell <%d,%d,%d> is error %d\n", row+1, col+1, board->game_table[row][col].val, board->game_table[row][col].is_err);
-				}
-			}
-			printf("board errors %d\n", board->num_err);
-			 TODO CHECKINGS */
-
 			switch (command.command){
 				case SOLVE:
 					play_solve(board, command.path, &game);
@@ -1068,6 +1058,5 @@ void play(){
 			}
 		}
 	}
-
 	free_board(board);
 }
