@@ -82,7 +82,7 @@ int is_block_valid(Board board, Cell **board_to_check, int num, int n_row_p, int
 
 	block_pos = get_num_block_position(n_row_p, n_col_p, board.m_rows, board.m_cols);
 	start_r = block_pos[0] * board.m_rows;
-	start_c = block_pos[1] * board.m_rows;
+	start_c = block_pos[1] * board.m_cols;
 
 	/* check if legal in block */ 
 	for (r = start_r; r < start_r + board.m_rows; r++){
