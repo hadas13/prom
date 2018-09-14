@@ -963,7 +963,10 @@ int play_reset(Board *board, Game *game) {
  * function that checks if the game is solved and prints content accordingly
  */
 void check_win(Board *board, Game *game){
-	if (board->filled == board->n * board->n){ /* board is full */
+	int cnt;
+
+	cnt = count_num_of_filled_cells(board);
+	if (cnt == (board->n * board->n)){ /* board is full */
 		if(play_validate(board, FALSE)){
 			/* validation passed */
 			printf("Puzzle solved successfully\n");
