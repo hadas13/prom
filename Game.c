@@ -360,7 +360,6 @@ Board *autofill(Board *board, Game *game, int to_print, MoveList **chain) {
 			if (board->game_table[r][c].val == UNASSIGNED) {
 				changed = check_and_change_one_sol_cell(board->game_table, r, c, new_board);
 				if (changed != UNASSIGNED) {
-					board->filled += 1;
 					if (is_something_changed == FALSE) {
 						/* first time that something changed in the board */
 						is_something_changed = TRUE;
@@ -387,13 +386,17 @@ Board *autofill(Board *board, Game *game, int to_print, MoveList **chain) {
 		}
 	}
 
-	if (append_new_move_to_moves_list(game->curr_move, autofill_set) != VALID) {
-		return NOT_VALID;
+	if (is_something_changed) {
+		/* should changed the move list */
+		if (append_new_move_to_moves_list(game->curr_move, autofill_set) != VALID) {
+			return NOT_VALID;
+		}
+		game->curr_move = game->curr_move->next;
+		board->filled = count_num_of_filled_cells(board);
+		update_errors_on_board(new_board);
 	}
 
-	game->curr_move = game->curr_move->next;
 	free_board(board);
-	update_errors_on_board(new_board);
 	return new_board;
 }
 
@@ -433,7 +436,7 @@ int play_num_solutions(Board *board) {
 		print_notify_one_solution();
 	}
 
-	else {
+	else if (num_sol > 1) {
 		print_notify_more_solutions();
 	}
 
