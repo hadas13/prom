@@ -33,7 +33,7 @@ int is_numeric_string(char *string){
 int save_file_to(FILE *fd, Board *board, int mode) {
 	int r, c;
 	/* write the rows number and the columns number */
-	fprintf(fd, "%d %d\n", board->m_cols, board->m_rows);
+	fprintf(fd, "%d %d\n", board->m_rows, board->m_cols);
 
 	for (r = 0; r < board->n; r++) {
 		for (c = 0; c < board->n; c++) {
