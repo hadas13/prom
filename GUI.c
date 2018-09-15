@@ -74,7 +74,7 @@ int print_cell(Cell cell, int mark_err, Game *game) {
 		printf(" %2d.", cell.val);
 	}
 
-	else if (cell.is_err && mark_err) {
+	else if (cell.is_err && (mark_err || game->game_mode == EDIT_MODE)) {
 		/* mark errors */
 		printf(" %2d*", cell.val);
 	}
