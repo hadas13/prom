@@ -1,5 +1,10 @@
 #include "Game.h"
+/* 
+ * this module is the implement of the game functions and logic. its implement all the gmae
+ * functions
+ */
 
+/********** functions **********/
 /*
  * function that initiates a cell struct
  */
@@ -155,6 +160,9 @@ int update_errors_on_board(Board *board) {
 	return VALID;
 }
 
+/* 
+ * insert val to cell row,col to board game
+ */
 int filled_cell(Board *board, Game *game, int col, int row, int val) {
 	int new_filled = board->filled;
 	int is_valid; /* indication if number to fill is valid for given cell */
@@ -283,6 +291,9 @@ int play_hint(struct Command command, Board *board){
 	return VALID;
 }
 
+/* this functions checks if row and column can be filled with only one option,
+ * if it is - it fills it with that value, and return as VALID, else - not valid.
+ */
 int check_and_change_one_sol_cell(Cell **checking_board, int row, int col, Board *board){
 	int changed = FALSE;
 	int set_num = 0;
@@ -341,6 +352,9 @@ int check_autofill_param(Board *board) {
 	return VALID;
 }
 
+/*
+ * this function is the logic of autofill
+ */
 Board *autofill(Board *board, Game *game, int to_print, MoveList **chain) {
 	int r, c;
 	int is_something_changed = FALSE;
@@ -478,6 +492,10 @@ int play_save(Board *board, Game *game, char *path) {
 	return VALID;
 }
 
+/* 
+ * function that checks if generate got legal parameters.
+ * x is the number of cells to insert, y is number of cells to leave on board
+ */
 int check_generate_valid(Board *board, int x, int y) {
 	int n = board->n, num_filled_cells = 0, unfilled_cells = 0;
 
@@ -497,19 +515,9 @@ int check_generate_valid(Board *board, int x, int y) {
 	return VALID;
 }
 
-int is_free_cell_position(int row, int col, Cell_Item *x_cells_arr, int num_cells_to_check){
-	int i;
-	for (i = 0; i < num_cells_to_check; i++) {
-		if (x_cells_arr[i].row == row && x_cells_arr[i].col == col) {
-			/* the given position in the array */
-			return FALSE;
-		}
-	}
-	/* the given position not in the array */
-	return TRUE;
-}
-
-
+/* 
+ * function that gets a row and column and randomly choose a legal value to fill in the cell
+ * */
 int get_random_legal_val(Board *board, int row, int col) {
 	int *num_arr = NULL;
 	int n = board->n;
@@ -544,69 +552,27 @@ int get_random_legal_val(Board *board, int row, int col) {
 	return next_num;
 }
 
-
-int update_board_with_cells_arr(Cell_Item *arr, Board *board, int num_cells) {
-	int i;
-	int r, c, val;
-	for (i = 0; i < num_cells; i++) {
-		r = arr[i].row;
-		c = arr[i].col;
-		val = arr[i].val;
-		/* update board */
-		board->game_table[r][c].val = val;
-		board->game_table[r][c].is_err = FALSE;
-		board->game_table[r][c].is_fixed = FALSE;
-	}
-
-	update_errors_on_board(board);
-	if (board->num_err != 0) {
-		/* something went worng - have a error in the board that shouldn't be */
-		return NOT_VALID;
-	}
-	return VALID;
-}
-
 /*
  * function that receives a pointer to a board struct and an int X and fills the (empty) board to have exactly X filled cells
  */
 int fill_x_empty_cells(Board *board, int x) {
-	Cell_Item *x_cells_arr = NULL;
 	int n = board->n;
 	int counter = 0;
 	int rand_row, rand_col, rand_val;
 
-	x_cells_arr = (Cell_Item *)malloc(x*sizeof(Cell_Item));
-	if (x_cells_arr == NULL){
-		print_malloc_failed_err();
-		exit(NOT_VALID);
-	}
-
 	while (counter != x) {
 		rand_row = rand() % n;
 		rand_col = rand() % n;
-
-		while (is_free_cell_position(rand_row, rand_col, x_cells_arr, counter) == FALSE) {
-			rand_row = rand() % n;
-			rand_col = rand() % n;
+		if (board->game_table[rand_row][rand_col].val == UNASSIGNED) {
+			rand_val = get_random_legal_val(board, rand_row, rand_col);
+			if (rand_val == NOT_POSSIBLE_VAL) {
+				/* didn't find a legal value for the cell */
+				return NOT_VALID;
+			}
+			board->game_table[rand_row][rand_col].val = rand_val;
 		}
-		x_cells_arr[counter].row = rand_row;
-		x_cells_arr[counter].col = rand_col;
-		rand_val = get_random_legal_val(board, rand_row, rand_col);
-		if (rand_val == NOT_POSSIBLE_VAL) {
-			/* didn't find a legal value for the cell */
-			return NOT_VALID;
-		}
-
-		x_cells_arr[counter].val = rand_val;
 		counter += 1;
 	}
-
-	if (update_board_with_cells_arr(x_cells_arr, board, x) == NOT_VALID) {
-		free(x_cells_arr);
-		return NOT_VALID;
-	}
-
-	free(x_cells_arr);
 	return VALID;
 }
 
@@ -922,6 +888,9 @@ int play_exit(Board *board, Game *game){
 	return VALID;
 }
 
+/* 
+ * functions that runs all posible "undo" in the game.
+ */
 int play_all_undo(Board *board, Game *game, MoveInfo *undo_move) {
 	while (game->curr_move->prev != NULL) {
 		*undo_move = game->curr_move->move;

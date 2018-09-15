@@ -1,10 +1,13 @@
+/* this module counts by backtracking solve the number of solution to a board.
+* it uses stack as the data structure that holds the possible values for the cells.
+*/
+
 #ifndef BACKTRACKING_H_
 #define BACKTRACKING_H_
 
 #include "Game.h"
 #include "defines.h"
 #include "Solver.h"
-
 /******* stack structure ***********/
 
 typedef struct _item {
@@ -19,19 +22,7 @@ typedef struct _stack {
 	int counter;
 }Stack;
 
-/******** functions *********/
-
-Stack *init_stack();
-
-int push(Stack *stack, int row, int col, int val);
-
-/* @return value: gets array of 3 elements: row, column and val of the top item */
-Item *pop(Stack *stack);
-
-void free_stack(Stack *stack);
-
-int insert_first_empty_cell(Board *board, int *row, int *col);
-
+/******** function *********/
 int count_solutions(Board *board);
 
 #endif /* BACKTRACKING_H_ */

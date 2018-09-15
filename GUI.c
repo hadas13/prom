@@ -1,3 +1,4 @@
+/* this module prints all the message to the user */
 #include <stdio.h>
 #include "GUI.h"
 

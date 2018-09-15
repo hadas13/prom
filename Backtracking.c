@@ -54,6 +54,7 @@ void free_stack(Stack *stack) {
 	free(stack);
 }
 
+/* insert first cell to the stack */
 int insert_first_empty_cell(Board *board, int *row, int *col) {
 	int is_empty_cell = FALSE;
 	int r = 0, c = 0;
@@ -76,6 +77,7 @@ int insert_first_empty_cell(Board *board, int *row, int *col) {
 }
 
 
+/* changes all assigned number to fixed */
 int mark_board_as_fixed(Board *board) {
 	int r, c;
 
@@ -90,6 +92,7 @@ int mark_board_as_fixed(Board *board) {
 	return VALID;
 }
 
+/* inserts possible values for cell to stack */
 int push_possible_values_to_stack(Board *board, Stack *stack, int row, int col, int *how_many_added) {
 	int possible_val = 0;
 
@@ -116,7 +119,7 @@ int empty_all_next_cells(Board *board, Item *item) {
 	}
 
 	for (r = item->row + 1; r < board->n; r++) {
-		for (c = item->col; c < board->n; c++) {
+		for (c = 0; c < board->n; c++) {
 			if (board->game_table[r][c].is_fixed == FALSE) {
 				board->game_table[r][c].val = UNASSIGNED;
 			}
