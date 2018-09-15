@@ -484,13 +484,13 @@ int check_generate_valid(Board *board, int x, int y) {
 	num_filled_cells = count_num_of_filled_cells(board);
 	unfilled_cells = (n*n - num_filled_cells);
 
- 	if (num_filled_cells != 0) {
- 		print_err_board_not_empty();
+	if (x > unfilled_cells || x < 0 || y > unfilled_cells || y < 0) {
+		print_err_value_not_int_range_E(unfilled_cells);
 		return NOT_VALID;
 	}
 
-	else if (x > unfilled_cells || x < 0 || y > unfilled_cells || y < 0) { 
-		print_err_value_not_int_range_E(unfilled_cells);
+	else if (num_filled_cells != 0) {
+ 		print_err_board_not_empty();
 		return NOT_VALID;
 	}
 
