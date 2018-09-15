@@ -128,7 +128,7 @@ int print_err_cell_is_fixed() {
 }
 
 int print_err_invalid_command() {
-	printf("Error: invalid command\n");
+	printf("ERROR: invalid command\n");
 	return VALID;
 }
 

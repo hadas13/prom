@@ -1005,7 +1005,7 @@ void play(){
 		printf("Enter your command:\n");
 		command = get_command();
 		if (command.valid == 0){ /* invalid command */
-			printf("Error: invalid command\n");
+			printf("ERROR: invalid command\n");
 		}
 		else if(game.game_mode == INIT_MODE){ /* init mode */
 			switch (command.command){
@@ -1022,7 +1022,7 @@ void play(){
 				play_exit(board, &game);
 				return;
 			default:
-				printf("Error: invalid command\n");
+				printf("ERROR: invalid command\n");
 				break;
 			}
 		}
@@ -1077,7 +1077,7 @@ void play(){
 					play_reset(board, &game);
 					break;
 				default:
-					printf("Error: invalid command\n");
+					printf("ERROR: invalid command\n");
 					break;
 			}
 		}
@@ -1124,7 +1124,7 @@ void play(){
 					play_reset(board, &game);
 					break;
 				default:
-					printf("Error: invalid command\n");
+					printf("ERROR: invalid command\n");
 					break;
 			}
 		}
