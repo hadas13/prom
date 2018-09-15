@@ -1047,8 +1047,9 @@ void play(){
 					print_board(board, game.mark_err, &game);
 					break;
 				case SET:
-					play_set(command, board, &game);
-					check_win(board, &game);
+					if (play_set(command, board, &game) == VALID){
+						check_win(board, &game);
+					}
 					break;
 				case VALIDATE:
 					play_validate(board, TRUE);
