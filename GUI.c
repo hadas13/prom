@@ -133,7 +133,7 @@ int print_err_invalid_command() {
 }
 
 int print_err_row_col_not_in_range(int range) {
-	printf("Error: value not in range 1-N\n");
+	printf("Error: value not in range 1-%d\n", range);
 	return VALID;
 }
 
