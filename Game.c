@@ -251,7 +251,7 @@ int play_hint(struct Command command, Board *board){
  	int row, col;
 
 	if (!is_row_col_param_valid(board->n, X, Y)) {
-		print_err_row_col_not_in_range();
+		print_err_row_col_not_in_range(board->n);
 		return NOT_VALID;
 	}
 

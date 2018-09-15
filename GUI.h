@@ -40,7 +40,7 @@ int print_err_cell_is_fixed();
 
 int print_err_invalid_command();
 
-int print_err_row_col_not_in_range();
+int print_err_row_col_not_in_range(int range);
 
 int print_err_board_contains_error();
 
