@@ -1,3 +1,4 @@
+/* this module prints all the messages to the user */
 #ifndef GUI_H_
 #define GUI_H_
 

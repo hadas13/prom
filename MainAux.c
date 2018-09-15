@@ -54,6 +54,7 @@ int save_file_to(FILE *fd, Board *board, int mode) {
 	return VALID;
 }
 
+/* empty the board from values */
 int clean_vals_from_board(Board *board) {
 	int c = 0;
 	int r = 0;
@@ -77,3 +78,25 @@ void clear_path(char *path){
 	}
 }
 
+/* 
+ * functions that copy game_table from source_board to dest_board
+ * */
+int copy_board(Cell **source_b, Cell **dest_b, int len){
+	int i = 0;
+	int j = 0;
+
+	if (source_b == NULL || dest_b == NULL) {
+		return NOT_VALID;
+	}
+
+	for (i = 0; i < len; i++) {
+		for (j = 0; j < len; j++) {
+			/* copy cell struct from source to dest */
+			dest_b[i][j].val = source_b[i][j].val;
+			dest_b[i][j].is_fixed = source_b[i][j].is_fixed;
+			dest_b[i][j].is_err = source_b[i][j].is_err;
+		}
+	}
+
+	return VALID;
+}

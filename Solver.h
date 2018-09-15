@@ -105,16 +105,6 @@ int is_block_valid(Board board, Cell **board_to_check, int num, int n_row_p, int
  */
 int is_cell_valid(Board *board, Cell **board_to_check, int num, int n_row_p, int n_col_p);
 
-/* 
- * the deterministic solving algorithme.
- * @param board: game board.
- * @param board_to_check: two-dimensions array to validate.
- * @param row: rows' index to solve.
- * @param col: columns' index to solve.
- */
-int solve_cell_deterministically(Cell **check_board, Board *board, int row, int column);
-
-
 /*
  * finds all the possible numbers for game_table[row_pos][col_pos] -
  * if "num" is a possible number, it insert 1 to arr[num].
@@ -126,13 +116,6 @@ int solve_cell_deterministically(Cell **check_board, Board *board, int row, int 
  * @return value: NOT_LEGAL for failure, else - VALID.
  */
 int get_possible_vals(Board *board, Cell **check_board, int row_pos, int col_pos, int *arr);
-
-
-/*
- * @param board_to_check: checks this two-dimensions array.
- * @param n: length of the row or column in the board.
- */
-int is_full(Cell **board_to_check, int n);
 
 
 /* 
@@ -149,26 +132,6 @@ int get_first_option(int *opt_arr, int n, int from);
  * @return value: the next random number to insert a cell.
  */
 int get_random_option(int *num_arr, int n);
-
-
-/*
- * updating the possible numbers array for a cell.
- * @param num_arr: array of possible number for cell.
- * @param n: num_arr[n] is number of possible digits.
- * @param next_num: index in num_arr to change to zero
- * @return value: valid.
- */
-int update_num_arr(int *num_arr, int n, int next_num);
-
-
-/* 
- * @param source_b: two-dimensions array of Cells to copy from.
- * @param dest_b: two-dimentions array of Cells to copy to.
- * @param len: number of cells in in each array.
- * @return value: for success - VALID, else - NOT_VALID. 
- */
-int copy_board(Cell **source_b, Cell **dest_b, int len);
-
 
 /*
  * checks if board->game_table can be solved.
