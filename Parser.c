@@ -51,6 +51,7 @@
 #define RESET 15
 #define GENERATE 16
 
+/* a function that receives a command struct with a command indicator in it and updates the relevent args for that command */
 void get_args(struct Command *command, char *tokens){
 	/* get numeric args for mark_errors, set, generate and hint commands */
 	if (command->command == MARK_ERRORS || command->command == SET || command->command == GENERATE || command->command == HINT){
@@ -107,6 +108,7 @@ void get_args(struct Command *command, char *tokens){
 	}
 }
 
+/* a function that takes user input and creates a relevant command according to the input */
 struct Command get_command(){
 	struct Command com;
 	char command_line[Command_Size];
