@@ -30,6 +30,7 @@ int is_numeric_string(char *string){
 	return numeric;
 }
 
+/* function that saves a sudoku board to file according to instructions */
 int save_file_to(FILE *fd, Board *board, int mode) {
 	int r, c;
 	/* write the rows number and the columns number */
