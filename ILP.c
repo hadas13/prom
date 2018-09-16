@@ -8,7 +8,13 @@
 #include "gurobi_c.h"
 #include "defines.h"
 
-
+/*
+ * receives a board, command indicator, row num and col num
+ * runs Gurobi ILP optimizor on the board and according to the command indicator returns:
+ * hint of cell <row,col> - if succeeded the number to place in the cell and 0 otherwise
+ * validate - 1 if succeeded and 0 otherwise
+ * generate - 1 if succeeded and fills the given board to have a full and correct board, 0 otherwise
+ */
 int run_ILP(Board *board, int command_index, int row, int col){
 	/* game parameters */
 	int sub_dim_rows = board->m_rows; /* number of rows in each block */
