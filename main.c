@@ -1,5 +1,4 @@
 /* main module - runs the game */
-#include "SPBufferset.h"
 #include <stdlib.h>
 #include <time.h>
 
