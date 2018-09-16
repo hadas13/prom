@@ -1,5 +1,6 @@
 #include "Moves.h"
 
+/* checking if the move is fixed value, if not - inserting the new move to new_move */
 int create_new_move(Board *board, MoveInfo *new_move, int row, int column, int value) {
 	if (board->game_table[row][column].is_fixed) {
 		print_err_cell_is_fixed();
@@ -17,6 +18,7 @@ int create_new_move(Board *board, MoveInfo *new_move, int row, int column, int v
 	return VALID;
 }
 
+/* function that finds the last move in the linked list of moves */
 int find_last_move(MoveList *chain, MoveList **ending) {
 	int not_in_loop = 0;
 	MoveList *current = chain;
@@ -34,6 +36,7 @@ int find_last_move(MoveList *chain, MoveList **ending) {
 	return NOT_VALID;
 }
 
+/* function that finds the first move in the linked list */
 int find_first_move(MoveList *chain, MoveList **ret_first) {
 	MoveList *curr = chain;
 	int not_in_loop = FALSE;
@@ -51,6 +54,8 @@ int find_first_move(MoveList *chain, MoveList **ret_first) {
 	printf("Error: couldn't find first move in find_first_move\n");
 	return NOT_VALID;
 }
+
+/* function that removes all the following moves from the linked list */
 int remove_next_moves(MoveList *begining) {
 	int not_in_loop = 0;
 	MoveList *current;
@@ -83,6 +88,12 @@ int remove_next_moves(MoveList *begining) {
 	}
 }
 
+/*
+ * @param curr_move: the current move in the game that we are playing in.
+ * @param new_move: the new information for the new move that the function will add to the new
+ *		    move list.
+ * @return value: valid or not_valid.
+ */
 int append_new_move_to_moves_list(MoveList *curr_move, MoveInfo new_move) {
 	if (remove_next_moves(curr_move) != VALID) {
 		printf("Error: something bad happend in remove_next_moves.\n");
@@ -107,6 +118,11 @@ int append_new_move_to_moves_list(MoveList *curr_move, MoveInfo new_move) {
 	return VALID;
 }
 
+/*
+ * @param **chain: the main chain of moves that going to be hold all the changes that
+ *		   going to be made in autofill.
+ * @return value: valid or not_valid.
+ */
 int create_empty_chain(MoveList **chain) {
 	MoveInfo init_move;
 	if (init_empty_game_move_info(&init_move) != VALID) {
@@ -130,6 +146,7 @@ int create_empty_chain(MoveList **chain) {
 	return VALID;
 }
 
+/* create a generate move in main_move */
 int create_generate_chain(MoveInfo *main_move,Board *board, Board *generate_board) {
 	MoveList *generate_chain;
 	MoveInfo new_move;
@@ -158,8 +175,7 @@ int create_generate_chain(MoveInfo *main_move,Board *board, Board *generate_boar
 	return VALID;
 }
 
-
-
+/* finds the begining of chain, and removes all the moves */
 int remove_moves_from_begining(MoveList **chain) {
 	MoveList *start;
 
@@ -177,6 +193,7 @@ int remove_moves_from_begining(MoveList **chain) {
 	*chain = start;
 	return VALID;
 }
+
 
 int undo_more_that_one_changes(Board *board, MoveList *curr_chain) {
 	MoveList *chain_for_changes;
@@ -205,6 +222,7 @@ int undo_more_that_one_changes(Board *board, MoveList *curr_chain) {
 	return VALID;
 }
 
+/* makes undo on board */
 int undo_on_board(Board *board, MoveInfo current) {
 	if (current.subchain == NULL) {
 		/* undo of one move/change */
@@ -244,6 +262,7 @@ int redo_more_that_one_changes(Board *board, MoveList *curr_chain) {
 	return VALID;
 }
 
+/* makes redo on board */
 int redo_on_board(Board *board, MoveInfo current) {
 	if (current.subchain == NULL) {
 		/* redo one move/change */
@@ -258,6 +277,9 @@ int redo_on_board(Board *board, MoveInfo current) {
 	}
 }
 
+/* getting initialized move info struct
+ * param move: the struct to initiliaze
+ * @return value: VALID after initialized */
 int init_empty_game_move_info(MoveInfo *move) {
 	move->row = EMPTY_VALUE_FOR_INIT;
 	move->col = EMPTY_VALUE_FOR_INIT;
