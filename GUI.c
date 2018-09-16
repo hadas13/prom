@@ -56,6 +56,10 @@ int print_err_board_validate_failed(){
 	return VALID;
 }
 
+/*
+ * Function that receives a struct containing the board game and its dimensions
+ * and prints the a line of "-" that frames the board
+ */
 void print_frame(Board *board){
 	/* prints "-" according to number of cells in block */
 	int i = 1;
@@ -66,6 +70,7 @@ void print_frame(Board *board){
 	printf("-\n");
 }
 
+/* function that prints a cell according to convention, game mode and mark error indicator */
 int print_cell(Cell cell, int mark_err, Game *game) {
 	if (mark_err != FALSE && mark_err != TRUE) {
 		return NOT_VALID;
@@ -90,6 +95,7 @@ int print_cell(Cell cell, int mark_err, Game *game) {
 	return VALID;
 }
 
+/* function that prints the board (print_board command) */
 void print_board(Board *board, int mark_err, Game *game){
 	int n = board->n; /* num of cells in a row of board */
 	int m_c = board->m_cols; /* num of cells in a column of block */
@@ -153,6 +159,7 @@ int print_err_no_moves_to_undo() {
 	return VALID;
 }
 
+/* function that prints the appropriate message after an undo command */
 int print_undo_move(MoveInfo move) {
 	MoveList *chain;
 
@@ -188,6 +195,7 @@ int print_err_no_moves_to_redo() {
 	return VALID;
 }
 
+/* function that prints the appropriate message after a redo command */
 int print_redo_move(MoveInfo move) {
 	MoveList *chain;
 
